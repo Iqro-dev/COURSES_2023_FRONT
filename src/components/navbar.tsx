@@ -1,4 +1,4 @@
-import { Box, AppBar, Toolbar, Typography } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography } from '@mui/material';
 
 export default function Navbar() {
   return (
