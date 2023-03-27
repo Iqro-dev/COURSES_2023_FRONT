@@ -5,8 +5,10 @@ import { SketchPicker } from 'react-color'
 import Image from 'mui-image'
 
 export default function SettingsPage() {
-  const [color, setColor] = useState('#000000')
-  const [file, setFile] = useState<string>('');
+  const [color, setColor] = useState<string>('#000000')
+  const [file, setFile] = useState<string>('')
+  const [title, setTitle] = useState<string>('Brak tytułu')
+  const [titleState, setTitleState] = useState<string>('')
 
   function setFileInput(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
@@ -22,6 +24,17 @@ export default function SettingsPage() {
         <Grid container direction='row' sx={{ paddingTop: 4 }}>
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant='h5'>Tytuł strony</Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', width: 300, gap: 2, paddingTop: 2 }}>
+              <Typography variant='h6'>{title}</Typography>
+
+              <TextField placeholder="Kursy..." value={titleState} onChange={(e) => setTitleState(e.currentTarget.value)} />
+
+              <Button variant='contained' color='success' onClick={() => {
+                setTitle(titleState)
+                setTitleState('')
+              }}>Zapisz</Button>
+            </Box>
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>
@@ -44,6 +57,10 @@ export default function SettingsPage() {
                   label={'Wybrany kolor'}
                   onChange={(e) => setColor(e.currentTarget.value)}
                 />
+
+                <Button variant='contained' color='success'>
+                  Zapisz
+                </Button>
               </Box>
             </Box>
           </Grid>
