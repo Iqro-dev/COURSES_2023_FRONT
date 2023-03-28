@@ -13,11 +13,15 @@ import {
   OutlinedInput,
 } from '@mui/material'
 import { FormEvent, useState } from 'react'
+import { useApi } from '../../hooks/use-api'
+import { Methods } from '../../types/fetch-methods'
 
 export default function LoginPage() {
   const [values, setValues] = useState({
     showPassword: false,
   })
+
+  const { getApiResponse } = useApi()
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword })
@@ -26,7 +30,11 @@ export default function LoginPage() {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
 
-    location.replace('/dashboard')
+    getApiResponse('/settings', Methods.GET).then((response) => {
+      console.log(response)
+    })
+
+    // location.replace('/dashboard')
   }
 
   return (
