@@ -1,7 +1,7 @@
 type Success<T = any> = {
   isSuccess: true
   code: number
-  data: T | string
+  data: T
 }
 
 type Error<T = string> = {

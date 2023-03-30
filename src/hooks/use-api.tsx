@@ -1,10 +1,9 @@
-
 import { Methods } from '../types/fetch-methods'
 import { ApiResponse } from '../types/api-response'
 
 export function useApi() {
-  const getApiResponse = async (url: string, method: Methods, data?: any) => {
-    const res = await fetchApi(url, method, data)
+  const getApiResponse = async <T,>(url: string, method: Methods, data?: any) => {
+    const res = await fetchApi<T>(url, method, data)
 
     return res
   }
@@ -19,20 +18,21 @@ export async function fetchApi<T>(
   method: Methods,
   data?: any,
 ): Promise<ApiResponse<T>> {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('auth.token')
 
-  let res, body
+  console.log(token)
+  let res
 
   try {
     res = await fetch(import.meta.env.VITE_API_URL + url, {
       method,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        Authentication: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify(data),
-    });
+    })
   } catch (error: Error | any) {
     const { status, data } = error.response ?? { status: 0 }
 
@@ -41,9 +41,12 @@ export async function fetchApi<T>(
     return { code, isSuccess: false, data }
   }
 
+  let body
   try {
-    body = JSON.parse(await res.text())
-  } catch { }
+    body = await res.json()
+  } catch (error: Error | any) {
+    body = {}
+  }
 
   const apiRes: ApiResponse<T> = {
     code: res.status,
