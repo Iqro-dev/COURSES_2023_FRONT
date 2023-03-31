@@ -24,7 +24,8 @@ export default function LoginPage() {
     loading: false,
   })
 
-  const { login: _login } = useContext(AuthContext)
+  const { login: _login, auth, user } = useContext(AuthContext)
+
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -42,7 +43,7 @@ export default function LoginPage() {
 
     _login(values.email, values.password).then(({ isSuccess, code }) => {
       if (isSuccess) {
-        location.replace('/dashboard')
+        console.log(auth, user)
       }
 
       if (code === 404) {

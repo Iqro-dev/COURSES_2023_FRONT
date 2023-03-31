@@ -3,7 +3,7 @@ import { useApi } from '../hooks/use-api'
 import { Methods } from '../types/fetch-methods'
 import Roles from '../types/roles'
 
-interface AuthUser {
+type AuthUser = {
   id: number
   email: string
   role: string
@@ -18,24 +18,33 @@ interface AuthUser {
 
 interface DefaultContext {
   user: AuthUser
-  auth: { token: string; time: number }
+  auth: { token: string; time: number, role: Roles, id: number }
   login: (email: string, password: string) => Promise<{ isSuccess: boolean; code: number }>
   logout: () => void
 }
 
 const defaultContext: DefaultContext = {
-  user: {} as AuthUser,
-  auth: { token: '', time: 0 },
+  user: { role: localStorage.getItem('auth.role') ?? '' } as AuthUser,
+  auth: { token: '', time: 0, role: '' as Roles, id: 0 },
   login: async () => ({ isSuccess: false, code: 0 }),
   logout: () => '',
 }
 
-export const AuthContext = createContext(defaultContext)
+export const AuthContext = createContext<DefaultContext>(defaultContext)
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const { getApiResponse } = useApi()
 
-  const [context, setContext] = useState<DefaultContext>(defaultContext)
+  const [data, setData] = useState<DefaultContext>({
+    ...defaultContext,
+    user: { role: localStorage.getItem('auth.role') ?? '' } as AuthUser,
+    auth: {
+      token: localStorage.getItem('auth.token') ?? '',
+      time: +(localStorage.getItem('auth.time') ?? '0'),
+      role: localStorage.getItem('auth.role') as Roles,
+      id: +(localStorage.getItem('auth.id') ?? '0'),
+    }
+  })
 
   const login = async (email: string, password: string) => {
     email = email.trim()
@@ -50,44 +59,39 @@ export function AuthProvider({ children }: PropsWithChildren) {
       },
     )
 
-    if (res.isSuccess && typeof res.data !== 'string') {
-      const { token, user } = res.data
+    if (!res.isSuccess) { return { isSuccess: false, code: res.code } }
 
-      console.log(res.data)
+    const { token, user } = res.data
 
-      const time = Date.now()
+    console.log(res.data)
 
-      localStorage.setItem('auth.role', user.role as Roles)
-      localStorage.setItem('auth.id', user.id.toString())
+    const time = Date.now()
 
-      const { isSuccess } = await loadAuth(user.id, time)
+    localStorage.setItem('auth.token', token)
+    localStorage.setItem('auth.id', user.id.toString())
+    localStorage.setItem('auth.role', user.role as Roles)
 
-      if (isSuccess) updateLocalStorage(token, time, user.id, user.role as Roles)
+    const { isSuccess } = await loadAuth(user.id, time)
 
-      setContext({
-        ...context,
-        user: { ...context.user, email },
-        auth: { token, time },
-      })
+    if (isSuccess) updateLocalStorage(token, time, user.id, user.role as Roles)
 
-      return { isSuccess: true, code: res.code }
-    }
-
-    return { isSuccess: false, code: res.code }
+    return { isSuccess, code: res.code }
   }
 
   const loadAuth = async (id: number, time: number) => {
     const res = await getUserData(id)
 
-    if (!res.isSuccess) {
-      return { isSuccess: false }
+    if (res.isSuccess && typeof res.data !== 'string') {
+      console.log('response', res)
+
+      const auth = { ...data.auth, time }
+      setData({ ...data, user: res.data, auth })
+
+
+      return { isSuccess: true }
     }
 
-    const auth = { ...context.auth, time }
-    const user = { ...res.data }
-    setContext({ ...context, user, auth })
-
-    return { isSuccess: true }
+    return { isSuccess: false }
   }
 
   const getUserData = async (
@@ -135,10 +139,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     localStorage.removeItem('auth.id')
     localStorage.removeItem('auth.role')
 
-    setContext({ ...defaultContext })
+    setData({ ...defaultContext })
   }
 
   return (
-    <AuthContext.Provider value={{ ...context, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...data, login, logout }}>{children}</AuthContext.Provider>
   )
 }
