@@ -53,6 +53,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     if (res.isSuccess && typeof res.data !== 'string') {
       const { token, user } = res.data
 
+      console.log(res.data)
+
       const time = Date.now()
 
       localStorage.setItem('auth.role', user.role as Roles)
@@ -60,7 +62,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
       const { isSuccess } = await loadAuth(user.id, time)
 
-      if (isSuccess) updateLocalStorage(token, time, email, user.id, user.role as Roles)
+      if (isSuccess) updateLocalStorage(token, time, user.id, user.role as Roles)
 
       setContext({
         ...context,
@@ -82,7 +84,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
 
     const auth = { ...context.auth, time }
-    const user = { ...res.data, loading: false }
+    const user = { ...res.data }
     setContext({ ...context, user, auth })
 
     return { isSuccess: true }
@@ -95,25 +97,24 @@ export function AuthProvider({ children }: PropsWithChildren) {
   > => {
     const res = await getApiResponse<AuthUser>(`/users?id=${id}`, Methods.GET)
 
-    console.log(res)
-
     if (!res.isSuccess) return { isSuccess: false, code: res.code }
+
+    console.log(res)
 
     return { ...res }
   }
 
   const loginFromStorage = async () => {
     const token = localStorage.getItem('auth.token')
-    const email = localStorage.getItem('auth.email')
     const id = +(localStorage.getItem('auth.id') ?? '0')
     const time = +(localStorage.getItem('auth.time') ?? '0')
     const role = localStorage.getItem('auth.role') as Roles
 
-    if (token && email && Date.now() < time) {
+    if (token && Date.now() < time) {
       const { isSuccess } = await loadAuth(id, time)
 
       if (isSuccess) {
-        updateLocalStorage(token, time, email, id, role)
+        updateLocalStorage(token, time, id, role)
         return { isSuccess }
       }
     }
@@ -121,26 +122,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return { isSuccess: false }
   }
 
-  const updateLocalStorage = (
-    token: string,
-    time: number,
-    email: string,
-    id: number,
-    role: Roles,
-  ) => {
+  const updateLocalStorage = (token: string, time: number, id: number, role: Roles) => {
     localStorage.setItem('auth.token', token)
     localStorage.setItem('auth.time', time.toString())
-    localStorage.setItem('auth.role', role)
-    localStorage.setItem('auth.email', email)
     localStorage.setItem('auth.id', id.toString())
+    localStorage.setItem('auth.role', role)
   }
 
   const logout = () => {
     localStorage.removeItem('auth.token')
     localStorage.removeItem('auth.time')
-    localStorage.removeItem('auth.role')
-    localStorage.removeItem('auth.email')
     localStorage.removeItem('auth.id')
+    localStorage.removeItem('auth.role')
 
     setContext({ ...defaultContext })
   }
