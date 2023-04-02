@@ -38,7 +38,7 @@ export default function DashboardLayout() {
     <>
       <Box sx={{ height: '100vh', display: 'flex' }}>
         <Navbar>
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
             <Typography variant='subtitle1'>{user.email}</Typography>
 
             <Tooltip title='Konto'>

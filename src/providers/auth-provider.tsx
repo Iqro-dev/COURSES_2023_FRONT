@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useState } from 'react'
+import { createContext, PropsWithChildren, useEffect, useState } from 'react'
 import { useApi } from '../hooks/use-api'
 import { Methods } from '../types/fetch-methods'
 import Roles from '../types/roles'
@@ -35,9 +35,8 @@ export const AuthContext = createContext<DefaultContext>(defaultContext)
 export function AuthProvider({ children }: PropsWithChildren) {
   const { getApiResponse } = useApi()
 
-  const [data, setData] = useState<DefaultContext>({
+  const [context, setContext] = useState<DefaultContext>({
     ...defaultContext,
-    user: { role: localStorage.getItem('auth.role') ?? '' } as AuthUser,
     auth: {
       token: localStorage.getItem('auth.token') ?? '',
       time: +(localStorage.getItem('auth.time') ?? '0'),
@@ -63,8 +62,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     const { token, user } = res.data
 
-    console.log(res.data)
-
     const time = Date.now()
 
     localStorage.setItem('auth.token', token)
@@ -82,11 +79,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const res = await getUserData(id)
 
     if (res.isSuccess && typeof res.data !== 'string') {
-      console.log('response', res)
-
-      const auth = { ...data.auth, time }
-      setData({ ...data, user: res.data, auth })
-
+      const auth = { ...context.auth, time }
+      const _context = { ...context, user: res.data, auth }
+      setContext(_context)
 
       return { isSuccess: true }
     }
@@ -103,8 +98,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     if (!res.isSuccess) return { isSuccess: false, code: res.code }
 
-    console.log(res)
-
     return { ...res }
   }
 
@@ -114,7 +107,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const time = +(localStorage.getItem('auth.time') ?? '0')
     const role = localStorage.getItem('auth.role') as Roles
 
-    if (token && Date.now() < time) {
+    if (token && Date.now() > time) {
       const { isSuccess } = await loadAuth(id, time)
 
       if (isSuccess) {
@@ -139,10 +132,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
     localStorage.removeItem('auth.id')
     localStorage.removeItem('auth.role')
 
-    setData({ ...defaultContext })
+    setContext({ ...defaultContext })
   }
 
+  useEffect(() => {
+    loginFromStorage()
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ ...data, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...context, login, logout }}>{children}</AuthContext.Provider>
   )
 }

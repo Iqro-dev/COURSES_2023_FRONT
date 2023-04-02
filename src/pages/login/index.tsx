@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import { FormEvent, useContext, useState } from 'react'
 import { AuthContext } from '../../providers/auth-provider'
+import { useNavigate } from 'react-router-dom'
 
 export default function LoginPage() {
   const [values, setValues] = useState({
@@ -24,8 +25,9 @@ export default function LoginPage() {
     loading: false,
   })
 
-  const { login: _login, auth, user } = useContext(AuthContext)
+  const { login: _login } = useContext(AuthContext)
 
+  const navigate = useNavigate()
 
   const { enqueueSnackbar } = useSnackbar()
 
@@ -43,7 +45,7 @@ export default function LoginPage() {
 
     _login(values.email, values.password).then(({ isSuccess, code }) => {
       if (isSuccess) {
-        console.log(auth, user)
+        navigate('/dashboard')
       }
 
       if (code === 404) {
