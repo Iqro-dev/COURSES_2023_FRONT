@@ -13,7 +13,7 @@ import {
   InputLabel,
   OutlinedInput,
 } from '@mui/material'
-import { FormEvent, useContext, useState } from 'react'
+import { FormEvent, useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../providers/auth-provider'
 import { useNavigate } from 'react-router-dom'
 
@@ -25,7 +25,7 @@ export default function LoginPage() {
     loading: false,
   })
 
-  const { login: _login } = useContext(AuthContext)
+  const { login: _login, auth } = useContext(AuthContext)
 
   const navigate = useNavigate()
 
@@ -70,6 +70,12 @@ export default function LoginPage() {
       })
     })
   }
+
+  useEffect(() => {
+    if (location.pathname === '/' && auth.token) {
+      navigate('/dashboard')
+    }
+  }, [])
 
   return (
     <>
