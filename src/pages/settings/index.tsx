@@ -1,20 +1,55 @@
 import { LoadingButton } from '@mui/lab'
 import { Box, Button, Grid, TextField, Typography } from '@mui/material'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { SketchPicker } from 'react-color'
 import Image from 'mui-image'
+import { useSettings } from '../../hooks/use-settings'
+import { useApi } from '../../hooks/use-api'
+import { Methods } from '../../types/fetch-methods'
+import { useSnackbar } from 'notistack'
 
 export default function SettingsPage() {
-  const [color, setColor] = useState<string>('#000000')
   const [file, setFile] = useState<string>('')
-  const [title, setTitle] = useState<string>('Brak tytułu')
-  const [titleState, setTitleState] = useState<string>('')
+
+  const { getApiResponse } = useApi()
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const { settings, loaded, reload } = useSettings()
+
+  const [inputSettings, setInputSettings] = useState({
+    headerText: 'Brak tytułu',
+    headerColor: '#000000',
+  })
 
   function setFileInput(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
-      setFile(URL.createObjectURL(e.target.files[0]));
+      setFile(URL.createObjectURL(e.target.files[0]))
     }
   }
+
+  const handleSaveSettings = () => {
+    getApiResponse('/settings', Methods.POST, inputSettings).then((res) => {
+      if (!res.isSuccess)
+        return enqueueSnackbar('Coś poszło nie tak', {
+          autoHideDuration: 3000,
+          preventDuplicate: true,
+          variant: 'error',
+        })
+
+      enqueueSnackbar('Zapisano', {
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+        variant: 'success',
+      })
+
+      reload()
+    })
+  }
+
+  useEffect(() => {
+    setInputSettings(settings)
+  }, [loaded])
 
   return (
     <>
@@ -25,15 +60,16 @@ export default function SettingsPage() {
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant='h5'>Tytuł strony</Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', width: 300, gap: 2, paddingTop: 2 }}>
-              <Typography variant='h6'>{title}</Typography>
-
-              <TextField placeholder="Kursy..." value={titleState} onChange={(e) => setTitleState(e.currentTarget.value)} />
-
-              <Button variant='contained' color='success' onClick={() => {
-                setTitle(titleState)
-                setTitleState('')
-              }}>Zapisz</Button>
+            <Box
+              sx={{ display: 'flex', flexDirection: 'column', width: 300, gap: 2, paddingTop: 2 }}
+            >
+              <TextField
+                placeholder='Kursy...'
+                value={inputSettings.headerText}
+                onChange={(e) =>
+                  setInputSettings({ ...inputSettings, headerText: e.currentTarget.value })
+                }
+              />
             </Box>
           </Grid>
 
@@ -49,29 +85,31 @@ export default function SettingsPage() {
                 paddingY: 2,
               }}
             >
-              <SketchPicker color={color} onChangeComplete={(color) => setColor(color.hex)} />
+              <SketchPicker
+                color={inputSettings.headerColor}
+                onChangeComplete={(color) =>
+                  setInputSettings({ ...inputSettings, headerColor: color.hex })
+                }
+              />
 
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <TextField
-                  value={color}
+                  value={inputSettings.headerColor}
                   label={'Wybrany kolor'}
-                  onChange={(e) => setColor(e.currentTarget.value)}
+                  onChange={(e) =>
+                    setInputSettings({ ...inputSettings, headerColor: e.currentTarget.value })
+                  }
                 />
-
-                <Button variant='contained' color='success'>
-                  Zapisz
-                </Button>
               </Box>
             </Box>
           </Grid>
         </Grid>
 
-
         <Grid item>
           <Typography variant='h5'>Zdjęcie strony</Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
-            <Image src={file} height="200px" duration={500} style={{ borderRadius: '12px' }} />
+            <Image src={file} height='200px' duration={500} style={{ borderRadius: '12px' }} />
 
             <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
               <LoadingButton variant='contained' component='label'>
@@ -79,8 +117,7 @@ export default function SettingsPage() {
                 <input type='file' hidden onChange={(e) => setFileInput(e)} />
               </LoadingButton>
 
-
-              <Button variant='contained' color='success'>
+              <Button variant='contained' color='success' onClick={handleSaveSettings}>
                 Zapisz
               </Button>
             </Box>
