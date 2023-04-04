@@ -53,59 +53,64 @@ export default function SettingsPage() {
 
   return (
     <>
-      <Grid container direction='column' sx={{ padding: 2 }}>
+      <Grid container direction='column' sx={{ padding: 2, gap: 4 }}>
         <Typography variant='h4'>Ustawienia:</Typography>
 
-        <Grid container direction='row' sx={{ paddingTop: 4 }}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant='h5'>Tytuł strony</Typography>
+        <Grid item>
+          <Typography variant='h5'>Tytuł strony</Typography>
 
-            <Box
-              sx={{ display: 'flex', flexDirection: 'column', width: 300, gap: 2, paddingTop: 2 }}
-            >
-              <TextField
-                placeholder='Kursy...'
-                value={inputSettings.headerText}
-                onChange={(e) =>
-                  setInputSettings({ ...inputSettings, headerText: e.currentTarget.value })
-                }
-              />
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant='h5'>Kolor strony</Typography>
-
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'start',
-                flexDirection: 'row',
-                gap: 2,
-                paddingY: 2,
-              }}
-            >
-              <SketchPicker
-                color={inputSettings.headerColor}
-                onChangeComplete={(color) =>
-                  setInputSettings({ ...inputSettings, headerColor: color.hex })
-                }
-              />
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField
-                  value={inputSettings.headerColor}
-                  label={'Wybrany kolor'}
-                  onChange={(e) =>
-                    setInputSettings({ ...inputSettings, headerColor: e.currentTarget.value })
-                  }
-                />
-              </Box>
-            </Box>
-          </Grid>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              paddingTop: 2,
+              maxWidth: 300,
+            }}
+          >
+            <TextField
+              placeholder='Kursy...'
+              value={inputSettings.headerText}
+              onChange={(e) =>
+                setInputSettings({ ...inputSettings, headerText: e.currentTarget.value })
+              }
+            />
+          </Box>
         </Grid>
 
-        <Grid item>
+        <Grid item xs={12} md={6}>
+          <Typography variant='h5'>Kolor strony</Typography>
+
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'start',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 2,
+              paddingY: 2,
+            }}
+          >
+            <SketchPicker
+              color={inputSettings.headerColor}
+              onChangeComplete={(color) =>
+                setInputSettings({ ...inputSettings, headerColor: color.hex })
+              }
+            />
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                value={inputSettings.headerColor}
+                label={'Wybrany kolor'}
+                onChange={(e) =>
+                  setInputSettings({ ...inputSettings, headerColor: e.currentTarget.value })
+                }
+              />
+            </Box>
+          </Box>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
           <Typography variant='h5'>Zdjęcie strony</Typography>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
