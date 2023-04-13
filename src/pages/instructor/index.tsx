@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, TextField } from '@mui/material'
+import { Grid, Typography, Box } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { useInstructors } from '../../hooks/instructor/use-instructors'
 
@@ -9,7 +9,7 @@ export default function LecturersList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 50,
+      width: 75,
     },
     {
       field: 'email',
@@ -30,7 +30,7 @@ export default function LecturersList() {
       field: 'instructorPhoneNumber',
       headerName: 'Telefon',
       valueGetter: (params: any) => params.row?.instructor?.phoneNumber ?? 'Brak numeru telefonu',
-      minWidth: 200,
+      flex: 1,
     },
   ]
 
@@ -38,14 +38,6 @@ export default function LecturersList() {
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
         <Typography variant='h4'>Prowadzący</Typography>
-
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-          <TextField label={'Imię'} />
-
-          <TextField label={'Nazwisko'} />
-
-          <TextField label={'Wiek'} />
-        </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid

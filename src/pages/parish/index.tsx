@@ -1,11 +1,11 @@
 import { Grid, Typography, Box } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
-import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { Preview } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { useParishes } from '../../hooks/parish/use-parishes'
 
-export default function DiocesesList() {
-  const { dioceses } = useDioceses()
+export default function ParishesList() {
+  const { parishes } = useParishes()
 
   const navigate = useNavigate()
 
@@ -17,7 +17,7 @@ export default function DiocesesList() {
     },
     {
       field: 'name',
-      headerName: 'Nazwa diecezji',
+      headerName: 'Nazwa parafii',
       flex: 1,
     },
     {
@@ -27,7 +27,7 @@ export default function DiocesesList() {
         <GridActionsCellItem
           label={''}
           icon={<Preview />}
-          onClick={() => navigate(`/dashboard/dioceses/details?id=${params.id}`)}
+          onClick={() => navigate(`/dashboard/parishes/details?id=${params.id}`)}
         />,
       ],
       flex: 1,
@@ -38,12 +38,12 @@ export default function DiocesesList() {
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Typography variant='h4'>Diecezje</Typography>
+        <Typography variant='h4'>Parafie</Typography>
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
             rows={
-              dioceses?.map((u, idx) => ({
+              parishes?.map((u, idx) => ({
                 ...u,
                 ordinalNumber: idx + 1,
               })) ?? []

@@ -9,6 +9,7 @@ import LoginPage from './pages/login'
 import NoMatch from './pages/no-match'
 import Settings from './pages/settings'
 import DioceseDetails from './pages/diocese/details'
+import ParishesList from './pages/parish'
 
 export function RoutesTree() {
   return (
@@ -31,6 +32,10 @@ export function RoutesTree() {
             <Route index element={<DiocesesList />} />
 
             <Route path='details' element={<DioceseDetails />} />
+          </Route>
+
+          <Route path='parishes'>
+            <Route index element={<ParishesList />} />
           </Route>
 
           <Route path='settings' element={<Settings />} />

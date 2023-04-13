@@ -20,7 +20,6 @@ export async function fetchApi<T>(
 ): Promise<ApiResponse<T>> {
   const token = localStorage.getItem('auth.token')
 
-  console.log(token)
   let res
 
   try {

@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, TextField } from '@mui/material'
+import { Grid, Typography, Box } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { useAdmins } from '../../hooks/admin/use-admins'
 
@@ -9,12 +9,12 @@ export default function AdminsList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 50,
+      width: 75,
     },
     {
       field: 'email',
       headerName: 'Login (e-mail)',
-      minWidth: 150,
+      flex: 1,
     },
     {
       field: 'adminFirstName',
@@ -30,7 +30,7 @@ export default function AdminsList() {
       field: 'adminPhoneNumber',
       headerName: 'Telefon',
       valueGetter: (params: any) => params.row?.admin?.phoneNumber ?? 'Brak numeru telefonu',
-      minWidth: 200,
+      flex: 1,
     },
   ]
 
@@ -38,12 +38,6 @@ export default function AdminsList() {
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
         <Typography variant='h4'>Administratorzy</Typography>
-
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
-          <TextField label={'Imię'} />
-
-          <TextField label={'Nazwisko'} />
-        </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
