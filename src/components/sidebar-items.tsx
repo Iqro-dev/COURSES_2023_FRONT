@@ -1,4 +1,10 @@
-import { AdminPanelSettings, Church as ChurchIcon, CoPresent, Settings } from '@mui/icons-material'
+import {
+  AdminPanelSettings,
+  Church,
+  CoPresent,
+  Settings,
+  SynagogueOutlined,
+} from '@mui/icons-material'
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { Link } from 'react-router-dom'
 
@@ -26,9 +32,15 @@ export function SidebarItems() {
       privilegedRoles: ['superadmin', 'admin'],
     },
     {
-      name: 'Diecezje i parafie',
+      name: 'Diecezje',
       path: '/dashboard/dioceses',
-      icon: <ChurchIcon />,
+      icon: <SynagogueOutlined />,
+      privilegedRoles: ['superadmin', 'admin', 'lecturer'],
+    },
+    {
+      name: 'Parafie',
+      path: '/dashboard/parishes',
+      icon: <Church />,
       privilegedRoles: ['superadmin', 'admin', 'lecturer'],
     },
     {
