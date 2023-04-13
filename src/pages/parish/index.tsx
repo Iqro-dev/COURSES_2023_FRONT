@@ -21,6 +21,11 @@ export default function ParishesList() {
       flex: 1,
     },
     {
+      field: 'address',
+      headerName: 'Adres parafii',
+      flex: 1,
+    },
+    {
       field: 'actions',
       type: 'actions',
       getActions: (params: { id: any }) => [

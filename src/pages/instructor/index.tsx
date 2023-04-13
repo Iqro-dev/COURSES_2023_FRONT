@@ -14,17 +14,19 @@ export default function LecturersList() {
     {
       field: 'email',
       headerName: 'Login (e-mail)',
-      minWidth: 150,
+      flex: 1,
     },
     {
       field: 'instructorFirstName',
       headerName: 'Imię',
       valueGetter: (params: any) => params.row?.instructor?.firstName,
+      flex: 1,
     },
     {
       field: 'instructorLastName',
       headerName: 'Nazwisko',
       valueGetter: (params: any) => params.row?.instructor?.lastName,
+      flex: 1,
     },
     {
       field: 'instructorPhoneNumber',
