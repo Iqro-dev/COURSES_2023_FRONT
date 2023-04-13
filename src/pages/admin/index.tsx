@@ -9,34 +9,28 @@ export default function AdminsList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
+      width: 50,
     },
     {
       field: 'email',
       headerName: 'Login (e-mail)',
-      width: 150,
-    },
-    {
-      field: 'role',
-      headerName: 'Rola',
-      width: 150,
+      minWidth: 150,
     },
     {
       field: 'adminFirstName',
       headerName: 'Imię',
       valueGetter: (params: any) => params.row?.admin?.firstName,
-      width: 150,
     },
     {
       field: 'adminLastName',
       headerName: 'Nazwisko',
       valueGetter: (params: any) => params.row?.admin?.lastName,
-      width: 150,
     },
     {
       field: 'adminPhoneNumber',
       headerName: 'Telefon',
       valueGetter: (params: any) => params.row?.admin?.phoneNumber ?? 'Brak numeru telefonu',
-      width: 300,
+      minWidth: 200,
     },
   ]
 
@@ -49,8 +43,6 @@ export default function AdminsList() {
           <TextField label={'Imię'} />
 
           <TextField label={'Nazwisko'} />
-
-          <TextField label={'Wiek'} />
         </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>

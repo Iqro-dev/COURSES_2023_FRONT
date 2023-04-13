@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react'
 import { useApi } from '../use-api'
 import { Methods } from '../../types/fetch-methods'
-import { Admin } from '../../types/admin/admin'
+import { Parish } from '../../types/parish/parish'
 
-export function useAdmins() {
+export function useParishes() {
   const { getApiResponse } = useApi()
 
-  const [admins, setAdmins] = useState<Admin[]>()
+  const [parishes, setParishes] = useState<Parish[]>()
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {
-    getApiResponse<Admin[]>('/users/list?role=admin', Methods.GET).then((res) => {
+    getApiResponse<Parish[]>('/parishes/list', Methods.GET).then((res) => {
       if (!res.isSuccess) return console.error(res)
 
-      const admins = res.data
+      const parishes = res.data
 
-      console.log(admins)
+      console.log(parishes)
 
-      if (!admins) return
+      if (!parishes) return
 
-      setAdmins(admins)
+      setParishes(parishes)
       setLoaded(true)
     })
   }
@@ -31,5 +31,5 @@ export function useAdmins() {
 
   useEffect(load, [])
 
-  return { admins, reload, loaded }
+  return { parishes, reload, loaded }
 }

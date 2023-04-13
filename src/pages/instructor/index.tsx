@@ -9,34 +9,28 @@ export default function LecturersList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
+      width: 50,
     },
     {
       field: 'email',
       headerName: 'Login (e-mail)',
-      width: 150,
-    },
-    {
-      field: 'role',
-      headerName: 'Rola',
-      width: 150,
+      minWidth: 150,
     },
     {
       field: 'instructorFirstName',
       headerName: 'Imię',
       valueGetter: (params: any) => params.row?.instructor?.firstName,
-      width: 150,
     },
     {
       field: 'instructorLastName',
       headerName: 'Nazwisko',
       valueGetter: (params: any) => params.row?.instructor?.lastName,
-      width: 150,
     },
     {
       field: 'instructorPhoneNumber',
       headerName: 'Telefon',
       valueGetter: (params: any) => params.row?.instructor?.phoneNumber ?? 'Brak numeru telefonu',
-      width: 300,
+      minWidth: 200,
     },
   ]
 

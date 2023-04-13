@@ -1,6 +1,8 @@
 type Admin = {
-  id: string
-  name: string
+  id: number
+  firstName: string
+  lastName: string
+  phoneNumber?: string
 }
 
 export type { Admin }
