@@ -1,14 +1,17 @@
 import { Grid, Typography, Box } from '@mui/material'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useDiocese } from '../../hooks/diocese/use-diocese'
 import { useParishes } from '../../hooks/parish/use-parishes'
 import { useEffect } from 'react'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
+import { Preview } from '@mui/icons-material'
 
 export default function DioceseDetails() {
   const [params] = useSearchParams()
 
   const id = params.get('id')
+
+  const navigate = useNavigate()
 
   const { diocese } = useDiocese(parseInt(id ?? ''))
 
@@ -18,17 +21,30 @@ export default function DioceseDetails() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 50,
+      width: 75,
     },
     {
       field: 'name',
       headerName: 'Nazwa Parafii',
-      minWidth: 150,
+      flex: 1,
     },
     {
       field: 'address',
       headerName: 'Adres Parafii',
-      minWidth: 200,
+      flex: 1,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      getActions: (params: { id: any }) => [
+        <GridActionsCellItem
+          label={''}
+          icon={<Preview />}
+          onClick={() => navigate(`/dashboard/parishes/details?id=${params.id}`)}
+        />,
+      ],
+      flex: 1,
+      align: 'right',
     },
   ]
 

@@ -10,6 +10,7 @@ import NoMatch from './pages/no-match'
 import Settings from './pages/settings'
 import DioceseDetails from './pages/diocese/details'
 import ParishesList from './pages/parish'
+import ParishDetails from './pages/parish/details'
 
 export function RoutesTree() {
   return (
@@ -36,6 +37,8 @@ export function RoutesTree() {
 
           <Route path='parishes'>
             <Route index element={<ParishesList />} />
+
+            <Route path='details' element={<ParishDetails />} />
           </Route>
 
           <Route path='settings' element={<Settings />} />

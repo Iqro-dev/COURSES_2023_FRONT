@@ -20,11 +20,13 @@ export default function AdminsList() {
       field: 'adminFirstName',
       headerName: 'Imię',
       valueGetter: (params: any) => params.row?.admin?.firstName,
+      flex: 1,
     },
     {
       field: 'adminLastName',
       headerName: 'Nazwisko',
       valueGetter: (params: any) => params.row?.admin?.lastName,
+      flex: 1,
     },
     {
       field: 'adminPhoneNumber',

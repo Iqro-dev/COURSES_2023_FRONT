@@ -2,29 +2,17 @@ import { createContext, PropsWithChildren, useEffect, useState } from 'react'
 import { useApi } from '../hooks/use-api'
 import { Methods } from '../types/fetch-methods'
 import Roles from '../types/roles'
-
-type AuthUser = {
-  id: number
-  email: string
-  role: string
-  lastLoginDate: string
-  admin: {
-    id: number
-    firstName: string
-    lastName: string
-    phoneNumber: string
-  }
-}
+import { User } from '../types/user'
 
 interface DefaultContext {
-  user: AuthUser
-  auth: { token: string; time: number, role: Roles, id: number }
+  user: User
+  auth: { token: string; time: number; role: Roles; id: number }
   login: (email: string, password: string) => Promise<{ isSuccess: boolean; code: number }>
   logout: () => void
 }
 
 const defaultContext: DefaultContext = {
-  user: { role: localStorage.getItem('auth.role') ?? '' } as AuthUser,
+  user: { role: localStorage.getItem('auth.role') ?? '' } as User,
   auth: { token: '', time: 0, role: '' as Roles, id: 0 },
   login: async () => ({ isSuccess: false, code: 0 }),
   logout: () => '',
@@ -42,14 +30,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
       time: +(localStorage.getItem('auth.time') ?? '0'),
       role: localStorage.getItem('auth.role') as Roles,
       id: +(localStorage.getItem('auth.id') ?? '0'),
-    }
+    },
   })
 
   const login = async (email: string, password: string) => {
     email = email.trim()
     if (!email && !password) return { ...(await loginFromStorage()), code: 0 }
 
-    const res = await getApiResponse<{ token: string; time: number; user: AuthUser }>(
+    const res = await getApiResponse<{ token: string; time: number; user: User }>(
       '/login',
       Methods.POST,
       {
@@ -58,7 +46,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       },
     )
 
-    if (!res.isSuccess) { return { isSuccess: false, code: res.code } }
+    if (!res.isSuccess) {
+      return { isSuccess: false, code: res.code }
+    }
 
     const { token, user } = res.data
 
@@ -92,9 +82,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const getUserData = async (
     id: number,
   ): Promise<
-    { isSuccess: false; code: number } | { isSuccess: true; code: number; data: AuthUser }
+    { isSuccess: false; code: number } | { isSuccess: true; code: number; data: User }
   > => {
-    const res = await getApiResponse<AuthUser>(`/users?id=${id}`, Methods.GET)
+    const res = await getApiResponse<User>(`/users?id=${id}`, Methods.GET)
 
     if (!res.isSuccess) return { isSuccess: false, code: res.code }
 
