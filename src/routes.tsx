@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import DashboardLayout from './layouts/dashboard'
 import DefaultLayout from './layouts/default'
-import AdminList from './pages/admin'
-import DictionaryList from './pages/dictionary'
+import AdminsList from './pages/admin'
+import DiocesesList from './pages/diocese'
 import Home from './pages/home'
-import LecturerList from './pages/lecturer'
+import InstructorsList from './pages/instructor'
 import LoginPage from './pages/login'
 import NoMatch from './pages/no-match'
 import Settings from './pages/settings'
+import DioceseDetails from './pages/diocese/details'
 
 export function RoutesTree() {
   return (
@@ -22,11 +23,15 @@ export function RoutesTree() {
         <Route path='dashboard' element={<DashboardLayout />}>
           <Route index element={<Home />} />
 
-          <Route path='administrators' element={<AdminList />} />
+          <Route path='administrators' element={<AdminsList />} />
 
-          <Route path='lecturers' element={<LecturerList />} />
+          <Route path='lecturers' element={<InstructorsList />} />
 
-          <Route path='dictionaries' element={<DictionaryList />} />
+          <Route path='dioceses'>
+            <Route index element={<DiocesesList />} />
+
+            <Route path='details' element={<DioceseDetails />} />
+          </Route>
 
           <Route path='settings' element={<Settings />} />
 

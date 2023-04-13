@@ -1,9 +1,9 @@
-import { AdminPanelSettings, CoPresent, LibraryBooks, Settings } from '@mui/icons-material'
+import { AdminPanelSettings, Church as ChurchIcon, CoPresent, Settings } from '@mui/icons-material'
 import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { Link } from 'react-router-dom'
 
 export function SidebarItems() {
-  const role = 'admin'
+  const role = localStorage.getItem('auth.role') ?? 'user'
 
   interface Link {
     name: string
@@ -17,25 +17,25 @@ export function SidebarItems() {
       name: 'Administratorzy',
       path: '/dashboard/administrators',
       icon: <AdminPanelSettings />,
-      privilegedRoles: ['admin'],
+      privilegedRoles: ['superadmin', 'admin'],
     },
     {
       name: 'Prowadzący',
       path: '/dashboard/lecturers',
       icon: <CoPresent />,
-      privilegedRoles: ['admin'],
+      privilegedRoles: ['superadmin', 'admin'],
     },
     {
-      name: 'Słowniki',
-      path: '/dashboard/dictionaries',
-      icon: <LibraryBooks />,
-      privilegedRoles: ['admin', 'lecturer'],
+      name: 'Diecezje i parafie',
+      path: '/dashboard/dioceses',
+      icon: <ChurchIcon />,
+      privilegedRoles: ['superadmin', 'admin', 'lecturer'],
     },
     {
       name: 'Ustawienia',
       path: '/dashboard/settings',
       icon: <Settings />,
-      privilegedRoles: ['admin', 'lecturer'],
+      privilegedRoles: ['superadmin', 'admin'],
     },
   ]
   return (

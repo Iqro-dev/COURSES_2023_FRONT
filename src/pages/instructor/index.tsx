@@ -1,9 +1,9 @@
 import { Grid, Typography, Box, TextField } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
-import { useAdmins } from '../../hooks/admin/use-admins'
+import { useInstructors } from '../../hooks/instructor/use-instructors'
 
-export default function AdminsList() {
-  const { admins } = useAdmins()
+export default function LecturersList() {
+  const { instructors } = useInstructors()
 
   const columns: GridColDef[] = [
     {
@@ -21,21 +21,21 @@ export default function AdminsList() {
       width: 150,
     },
     {
-      field: 'adminFirstName',
+      field: 'instructorFirstName',
       headerName: 'Imię',
-      valueGetter: (params: any) => params.row?.admin?.firstName,
+      valueGetter: (params: any) => params.row?.instructor?.firstName,
       width: 150,
     },
     {
-      field: 'adminLastName',
+      field: 'instructorLastName',
       headerName: 'Nazwisko',
-      valueGetter: (params: any) => params.row?.admin?.lastName,
+      valueGetter: (params: any) => params.row?.instructor?.lastName,
       width: 150,
     },
     {
-      field: 'adminPhoneNumber',
+      field: 'instructorPhoneNumber',
       headerName: 'Telefon',
-      valueGetter: (params: any) => params.row?.admin?.phoneNumber ?? 'Brak numeru telefonu',
+      valueGetter: (params: any) => params.row?.instructor?.phoneNumber ?? 'Brak numeru telefonu',
       width: 300,
     },
   ]
@@ -43,7 +43,7 @@ export default function AdminsList() {
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Typography variant='h4'>Administratorzy</Typography>
+        <Typography variant='h4'>Prowadzący</Typography>
 
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
           <TextField label={'Imię'} />
@@ -56,7 +56,7 @@ export default function AdminsList() {
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
             rows={
-              admins?.map((u, idx) => ({
+              instructors?.map((u, idx) => ({
                 ...u,
                 ordinalNumber: idx + 1,
               })) ?? []
