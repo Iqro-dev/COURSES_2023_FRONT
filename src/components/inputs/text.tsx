@@ -1,6 +1,5 @@
 import { TextField, TextFieldProps } from '@mui/material'
-import { InputHTMLAttributes, useEffect, useState } from 'react'
-import { Label } from './label'
+import { InputHTMLAttributes } from 'react'
 
 interface InputTextProps {
   onChange: (value: string, error: boolean) => void
@@ -21,46 +20,30 @@ export function InputText({
   required,
   onChange,
   helperText,
-  defaultValue,
   value,
   type,
   disabled,
-  name,
   InputProps,
   TextFieldProps,
 }: InputTextProps) {
-  const [inputValue, setInputValue] = useState(value ?? defaultValue ?? '')
-
-  useEffect(() => {
-    setInputValue(value ?? '')
-  }, [value])
-
   return (
-    <Label label={label} required={required}>
+    <>
       <TextField
-        name={name}
-        defaultValue={defaultValue}
-        error={required && !inputValue}
+        label={label}
+        type={type ?? 'text'}
+        disabled={disabled}
         helperText={helperText}
-        value={value}
         onChange={(e) => {
           const newValue = e.target.value
 
-          setInputValue(newValue)
           onChange(newValue, !!required && !newValue)
         }}
-        variant='outlined'
-        size='small'
-        className='min-h-[70px]'
-        type={type ?? 'text'}
-        InputProps={{
-          inputProps: { min: 0 },
-          ...InputProps,
-        }}
-        fullWidth
-        disabled={disabled}
+        InputProps={{ inputProps: { min: 0 }, ...InputProps }}
+        value={value}
+        required={required}
+        InputLabelProps={{ shrink: true }}
         {...TextFieldProps}
       />
-    </Label>
+    </>
   )
 }

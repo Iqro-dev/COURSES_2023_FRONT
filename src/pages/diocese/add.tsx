@@ -1,7 +1,6 @@
-import { Typography } from '@mui/material'
+import { Grid, TextField, Typography } from '@mui/material'
 import { Diocese } from '../../types/diocese/diocese'
 import { useState } from 'react'
-import { InputText } from '../../components/inputs/text'
 import { LoadingButton } from '@mui/lab'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
@@ -38,13 +37,25 @@ export default function AddDiocese() {
 
   return (
     <>
-      <Typography variant='h5'>Dodaj diecezje</Typography>
+      <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
+        <Typography variant='h4'>Dodaj diecezje</Typography>
 
-      <InputText onChange={(e) => setDiocese({ ...diocese, name: e })} />
+        <TextField
+          label={'Nazwa diecezji'}
+          required
+          onChange={(e) => setDiocese({ ...diocese, name: e.currentTarget.value })}
+        />
 
-      <LoadingButton color='success' onClick={handleAddDiocese}>
-        Dodaj
-      </LoadingButton>
+        <LoadingButton
+          color='success'
+          disabled={!diocese?.name}
+          variant='contained'
+          onClick={handleAddDiocese}
+          sx={{ width: 150, alignSelf: 'end' }}
+        >
+          Dodaj
+        </LoadingButton>
+      </Grid>
     </>
   )
 }
