@@ -1,5 +1,5 @@
 type Diocese = {
-  id: number
+  id?: number
   name: string
 }
 
