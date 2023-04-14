@@ -1,13 +1,18 @@
-import { Grid, Typography, Box, Button } from '@mui/material'
+import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
-import { Add, Delete, Preview } from '@mui/icons-material'
+import { Add, Delete, Edit } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useSnackbar } from 'notistack'
+import { useState } from 'react'
 
 export default function DiocesesList() {
+  const [deleteDialog, setDeleteDialog] = useState(false)
+
+  const [deleteDialogId, setDeleteDialogId] = useState(0)
+
   const { dioceses, reload } = useDioceses()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -52,14 +57,17 @@ export default function DiocesesList() {
       getActions: (params: { id: any }) => [
         <GridActionsCellItem
           label={''}
-          icon={<Preview />}
+          icon={<Edit />}
           onClick={() => navigate(`/dashboard/dioceses/details?id=${params.id}`)}
         />,
 
         <GridActionsCellItem
           label={''}
           icon={<Delete color='error' />}
-          onClick={() => handleDelete(params.id)}
+          onClick={() => {
+            setDeleteDialog(true)
+            setDeleteDialogId(params.id)
+          }}
         />,
       ],
       flex: 1,
@@ -69,6 +77,33 @@ export default function DiocesesList() {
 
   return (
     <>
+      <Dialog open={deleteDialog} sx={{ padding: 4 }}>
+        <DialogTitle>Czy na pewno chcesz usunąć tą diecezję?</DialogTitle>
+
+        <DialogActions
+          sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+        >
+          <Button
+            color='primary'
+            onClick={() => {
+              setDeleteDialog(false)
+            }}
+          >
+            Anuluj
+          </Button>
+
+          <Button
+            color='error'
+            onClick={() => {
+              handleDelete(deleteDialogId)
+              setDeleteDialog(false)
+            }}
+          >
+            Usuń
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
           <Typography variant='h4'>Diecezje</Typography>

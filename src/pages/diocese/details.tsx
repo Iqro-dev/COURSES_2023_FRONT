@@ -1,10 +1,12 @@
-import { Grid, Typography, Box } from '@mui/material'
+import { Grid, Typography, Box, Stack, Button } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useDiocese } from '../../hooks/diocese/use-diocese'
 import { useParishes } from '../../hooks/parish/use-parishes'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { Preview } from '@mui/icons-material'
+import { InputText } from '../../components/inputs/text'
+import { Diocese } from '../../types/diocese/diocese'
 
 export default function DioceseDetails() {
   const [params] = useSearchParams()
@@ -13,9 +15,11 @@ export default function DioceseDetails() {
 
   const navigate = useNavigate()
 
-  const { diocese } = useDiocese(parseInt(id ?? ''))
+  const { diocese, loaded } = useDiocese(parseInt(id ?? ''))
 
-  const { parishes, loaded } = useParishes()
+  const [dioceseDetails, setDioceseDetails] = useState<Diocese>()
+
+  const { parishes } = useParishes()
 
   const columns: GridColDef[] = [
     {
@@ -49,15 +53,25 @@ export default function DioceseDetails() {
   ]
 
   useEffect(() => {
-    console.log()
+    setDioceseDetails(diocese)
   }, [loaded])
 
   return (
     <>
       <Grid container direction='column' gap={3} sx={{ padding: 2 }}>
-        <Typography variant='h4'>Szczegóły: {diocese?.name}</Typography>
+        <Typography variant='h4'>Szczegóły:</Typography>
 
-        <Typography variant='h4'>Parafie</Typography>
+        <Stack direction='row' alignItems='center' gap={2}>
+          <Typography variant='h6'>Nazwa diecezji:</Typography>
+          <InputText
+            onChange={(e) => setDioceseDetails({ ...diocese, name: e })}
+            value={dioceseDetails?.name}
+          />
+        </Stack>
+
+        <Button variant='contained' color='success' sx={{ width: 150 }}>
+          Zapisz
+        </Button>
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
