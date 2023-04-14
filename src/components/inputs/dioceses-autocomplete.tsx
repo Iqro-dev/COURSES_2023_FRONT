@@ -1,4 +1,4 @@
-import { Autocomplete, TextField } from '@mui/material'
+import { Autocomplete, AutocompleteProps, TextField } from '@mui/material'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { useEffect } from 'react'
 
@@ -9,13 +9,10 @@ export type Option = {
 
 export let diocesesOptions: Option[] = []
 
-interface DiocesesAutocompleteProps {
-  onChange: (value: number) => void
-  value?: number
-  defaultValue?: number
-}
-
-export function DiocesesAutocomplete({ onChange, value, defaultValue }: DiocesesAutocompleteProps) {
+export function DiocesesAutocomplete(props: Omit<
+  AutocompleteProps<Option, undefined, undefined, undefined, 'div'>,
+  'options' | 'renderInput' | 'getOptionLabel' | 'loading'
+>) {
   const { dioceses } = useDioceses()
 
   useEffect(() => {
@@ -24,12 +21,7 @@ export function DiocesesAutocomplete({ onChange, value, defaultValue }: Dioceses
 
   return (
     <Autocomplete
-      sx={{ minWidth: 250 }}
-      defaultValue={diocesesOptions.find((c) => c.value === defaultValue ?? -1)}
-      value={diocesesOptions.find((c) => c.value === value ?? -1)}
-      onChange={(_, e) => {
-        onChange(e?.value ?? -1)
-      }}
+      {...props}
       renderInput={(params) => <TextField {...params} label='Diecezja' variant='outlined' />}
       options={diocesesOptions}
     />

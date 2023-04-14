@@ -97,7 +97,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const time = +(localStorage.getItem('auth.time') ?? '0')
     const role = localStorage.getItem('auth.role') as Roles
 
-    if (token && Date.now() > time) {
+    if (token && Date.now() < time) {
       const { isSuccess } = await loadAuth(id, time)
 
       if (isSuccess) {
