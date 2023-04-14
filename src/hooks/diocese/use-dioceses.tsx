@@ -6,7 +6,7 @@ import { Diocese } from '../../types/diocese/diocese'
 export function useDioceses() {
   const { getApiResponse } = useApi()
 
-  const [dioceses, setDioceses] = useState<Diocese[]>()
+  const [dioceses, setDioceses] = useState<Diocese[]>([])
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {

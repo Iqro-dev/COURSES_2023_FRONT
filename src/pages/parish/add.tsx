@@ -1,14 +1,15 @@
 import { Grid, TextField, Typography } from '@mui/material'
-import { Diocese } from '../../types/diocese/diocese'
 import { useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
+import { Parish } from '../../types/parish/parish'
+import { DiocesesAutocomplete } from '../../components/inputs/dioceses-autocomplete'
 
-export default function AddDiocese() {
-  const [diocese, setDiocese] = useState<Diocese>()
+export default function AddParish() {
+  const [parish, setParish] = useState<Parish>({ name: '', address: '', dioceseId: -1 })
 
   const { getApiResponse } = useApi()
 
@@ -16,8 +17,8 @@ export default function AddDiocese() {
 
   const navigate = useNavigate()
 
-  const handleAddDiocese = () => {
-    getApiResponse('/dioceses', Methods.POST, diocese).then((res) => {
+  const handleAddParish = () => {
+    getApiResponse('/parishes', Methods.POST, parish).then((res) => {
       if (!res.isSuccess)
         return enqueueSnackbar('Coś poszło nie tak', {
           autoHideDuration: 3000,
@@ -38,19 +39,32 @@ export default function AddDiocese() {
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Typography variant='h4'>Dodaj diecezje</Typography>
+        <Typography variant='h4'>Dodaj parafię</Typography>
 
         <TextField
-          label={'Nazwa diecezji'}
+          label={'Nazwa parafii'}
           required
-          onChange={(e) => setDiocese({ ...diocese, name: e.target.value })}
+          onChange={(e) => setParish({ ...parish, name: e.target.value })}
+        />
+
+        <TextField
+          label={'Adres parafii'}
+          required
+          onChange={(e) => setParish({ ...parish, address: e.target.value })}
+        />
+
+        <DiocesesAutocomplete
+          value={parish.dioceseId}
+          onChange={(e) => {
+            setParish((prev) => ({ ...prev, dioceseId: e ?? -1 }))
+          }}
         />
 
         <LoadingButton
           color='success'
-          disabled={!diocese?.name}
+          disabled={!parish?.name}
           variant='contained'
-          onClick={handleAddDiocese}
+          onClick={handleAddParish}
           sx={{ width: 150, alignSelf: 'end' }}
         >
           Dodaj

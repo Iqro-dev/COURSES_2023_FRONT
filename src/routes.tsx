@@ -12,6 +12,7 @@ import DioceseDetails from './pages/diocese/details'
 import ParishesList from './pages/parish'
 import ParishDetails from './pages/parish/details'
 import AddDiocese from './pages/diocese/add'
+import AddParish from './pages/parish/add'
 
 export function RoutesTree() {
   return (
@@ -42,6 +43,8 @@ export function RoutesTree() {
             <Route index element={<ParishesList />} />
 
             <Route path='details' element={<ParishDetails />} />
+
+            <Route path='add' element={<AddParish />} />
           </Route>
 
           <Route path='settings' element={<Settings />} />

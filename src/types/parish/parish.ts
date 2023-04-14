@@ -1,5 +1,5 @@
 type Parish = {
-  id: number
+  id?: number
   name: string
   address: string
   dioceseId: number
