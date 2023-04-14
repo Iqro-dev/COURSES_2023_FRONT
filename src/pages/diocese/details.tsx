@@ -7,17 +7,24 @@ import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { Preview } from '@mui/icons-material'
 import { InputText } from '../../components/inputs/text'
 import { Diocese } from '../../types/diocese/diocese'
+import { useApi } from '../../hooks/use-api'
+import { Methods } from '../../types/fetch-methods'
+import { useSnackbar } from 'notistack'
 
 export default function DioceseDetails() {
   const [params] = useSearchParams()
 
   const id = params.get('id')
 
+  const { enqueueSnackbar } = useSnackbar()
+
   const navigate = useNavigate()
 
   const { diocese, loaded } = useDiocese(parseInt(id ?? ''))
 
-  const [dioceseDetails, setDioceseDetails] = useState<Diocese>()
+  const { getApiResponse } = useApi()
+
+  const [dioceseDetails, setDioceseDetails] = useState<Diocese>({ name: '' })
 
   const { parishes } = useParishes()
 
@@ -52,8 +59,29 @@ export default function DioceseDetails() {
     },
   ]
 
+  const handleEdit = () => {
+    setDioceseDetails({ ...dioceseDetails, name: dioceseDetails.name.trim() })
+
+    getApiResponse('/dioceses', Methods.PUT, dioceseDetails).then((res) => {
+      if (!res.isSuccess)
+        return enqueueSnackbar('Coś poszło nie tak', {
+          autoHideDuration: 3000,
+          preventDuplicate: true,
+          variant: 'error',
+        })
+
+      enqueueSnackbar('Zmiany zostały zapisane', {
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+        variant: 'info',
+      })
+
+      navigate(-1)
+    })
+  }
+
   useEffect(() => {
-    setDioceseDetails(diocese)
+    if (diocese) setDioceseDetails(diocese)
   }, [loaded])
 
   return (
@@ -65,11 +93,12 @@ export default function DioceseDetails() {
           <Typography variant='h6'>Nazwa diecezji:</Typography>
           <InputText
             onChange={(e) => setDioceseDetails({ ...diocese, name: e })}
-            value={dioceseDetails?.name}
+            value={dioceseDetails.name}
+            defaultValue={diocese?.name}
           />
         </Stack>
 
-        <Button variant='contained' color='success' sx={{ width: 150 }}>
+        <Button variant='contained' color='success' sx={{ width: 150 }} onClick={handleEdit}>
           Zapisz
         </Button>
 
