@@ -114,7 +114,7 @@ export default function ParishesList() {
 
           <Button variant='outlined' color='primary' component={Link} to='./add'>
             <Add />
-            Dodaj parafie
+            Dodaj parafię
           </Button>
         </Box>
 
