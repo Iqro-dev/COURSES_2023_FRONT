@@ -6,14 +6,14 @@ import { User } from '../types/user'
 
 interface DefaultContext {
   user: User
-  auth: { token: string; time: number; role: Roles; id: number }
+  auth: { token: string; time: number; role: Roles; id: number; loginStatus: boolean | undefined }
   login: (email: string, password: string) => Promise<{ isSuccess: boolean; code: number }>
   logout: () => void
 }
 
 const defaultContext: DefaultContext = {
   user: { role: localStorage.getItem('auth.role') ?? '' } as User,
-  auth: { token: '', time: 0, role: '' as Roles, id: 0 },
+  auth: { token: '', time: 0, role: '' as Roles, id: 0, loginStatus: undefined },
   login: async () => ({ isSuccess: false, code: 0 }),
   logout: () => '',
 }
@@ -26,6 +26,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [context, setContext] = useState<DefaultContext>({
     ...defaultContext,
     auth: {
+      loginStatus: undefined,
       token: localStorage.getItem('auth.token') ?? '',
       time: +(localStorage.getItem('auth.time') ?? '0'),
       role: localStorage.getItem('auth.role') as Roles,
@@ -69,13 +70,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const res = await getUserData(id)
 
     if (res.isSuccess && typeof res.data !== 'string') {
-      const auth = { ...context.auth, time }
+      const auth = { ...context.auth, time, loginStatus: true }
       const _context = { ...context, user: res.data, auth }
       setContext(_context)
 
       return { isSuccess: true }
     }
 
+    setContext({ ...context, auth: { ...context.auth, time, loginStatus: false } })
     return { isSuccess: false }
   }
 
@@ -97,7 +99,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const time = +(localStorage.getItem('auth.time') ?? '0')
     const role = localStorage.getItem('auth.role') as Roles
 
-    if (token && Date.now() > time) {
+    const OneDay = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
+
+    if (token && time > OneDay) {
       const { isSuccess } = await loadAuth(id, time)
 
       if (isSuccess) {
@@ -106,6 +110,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       }
     }
 
+    setContext({ ...context, auth: { ...context.auth, time, loginStatus: false } })
     return { isSuccess: false }
   }
 

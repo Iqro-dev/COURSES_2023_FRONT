@@ -13,6 +13,7 @@ import ParishesList from './pages/parish'
 import ParishDetails from './pages/parish/details'
 import AddDiocese from './pages/diocese/add'
 import AddParish from './pages/parish/add'
+import AuthRoute from './components/routes/auth-route'
 
 export function RoutesTree() {
   return (
@@ -24,7 +25,14 @@ export function RoutesTree() {
           <Route path='*' element={<NoMatch />} />
         </Route>
 
-        <Route path='dashboard' element={<DashboardLayout />}>
+        <Route
+          path='dashboard'
+          element={
+            <AuthRoute>
+              <DashboardLayout />
+            </AuthRoute>
+          }
+        >
           <Route index element={<Home />} />
 
           <Route path='administrators' element={<AdminsList />} />
