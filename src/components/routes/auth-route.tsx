@@ -10,7 +10,7 @@ export function AuthRoute({ children }: PropsWithChildren): ReactElement {
   } = useContext(AuthContext)
 
   const validateAuth = () => {
-    if (!loginStatus && typeof loginStatus !== 'undefined') navigate('/')
+    if (typeof loginStatus !== 'undefined') loginStatus ? navigate('/dashboard') : navigate('/')
   }
 
   useEffect(validateAuth, [loginStatus])

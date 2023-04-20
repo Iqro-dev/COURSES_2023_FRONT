@@ -27,7 +27,7 @@ export function SidebarItems() {
     },
     {
       name: 'Prowadzący',
-      path: '/dashboard/lecturers',
+      path: '/dashboard/instructors',
       icon: <CoPresent />,
       privilegedRoles: ['superadmin', 'admin'],
     },

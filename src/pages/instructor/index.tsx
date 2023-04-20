@@ -1,6 +1,8 @@
-import { Grid, Typography, Box } from '@mui/material'
+import { Grid, Typography, Box, Button } from '@mui/material'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { useInstructors } from '../../hooks/instructor/use-instructors'
+import { Add } from '@mui/icons-material'
+import { Link } from 'react-router-dom'
 
 export default function LecturersList() {
   const { instructors } = useInstructors()
@@ -39,7 +41,14 @@ export default function LecturersList() {
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Typography variant='h4'>Prowadzący</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Typography variant='h4'>Prowadzący</Typography>
+
+          <Button variant='outlined' color='primary' component={Link} to='./add'>
+            <Add />
+            Dodaj prowadzącego
+          </Button>
+        </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
