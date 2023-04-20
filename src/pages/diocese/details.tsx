@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, Stack, Button } from '@mui/material'
+import { Grid, Typography, Box, Button, Stack } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useDiocese } from '../../hooks/diocese/use-diocese'
 import { useParishes } from '../../hooks/parish/use-parishes'
@@ -89,18 +89,12 @@ export default function DioceseDetails() {
       <Grid container direction='column' gap={3} sx={{ padding: 2 }}>
         <Typography variant='h4'>Szczegóły:</Typography>
 
-        <Stack direction='row' alignItems='center' gap={2}>
-          <Typography variant='h6'>Nazwa diecezji:</Typography>
-          <InputText
-            onChange={(e) => setDioceseDetails({ ...diocese, name: e })}
-            value={dioceseDetails.name}
-            defaultValue={diocese?.name}
-          />
-        </Stack>
-
-        <Button variant='contained' color='success' sx={{ width: 150 }} onClick={handleEdit}>
-          Zapisz
-        </Button>
+        <InputText
+          label='Nazwa diecezji'
+          onChange={(e) => setDioceseDetails({ ...diocese, name: e })}
+          value={dioceseDetails.name}
+          defaultValue={diocese?.name}
+        />
 
         <Box sx={{ height: 500, width: '100%' }}>
           <DataGrid
@@ -115,6 +109,16 @@ export default function DioceseDetails() {
             columns={columns}
           />
         </Box>
+
+        <Stack direction='row' justifyContent='space-between'>
+          <Button onClick={() => navigate(-1)} variant='contained' color='primary'>
+            Powrót
+          </Button>
+
+          <Button onClick={handleEdit} variant='contained' color='success'>
+            Zapisz
+          </Button>
+        </Stack>
       </Grid>
     </>
   )

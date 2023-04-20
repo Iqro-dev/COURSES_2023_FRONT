@@ -1,4 +1,4 @@
-import { Grid, TextField, Typography } from '@mui/material'
+import { Grid, Stack, TextField, Typography } from '@mui/material'
 import { Diocese } from '../../types/diocese/diocese'
 import { useState } from 'react'
 import { LoadingButton } from '@mui/lab'
@@ -46,15 +46,21 @@ export default function AddDiocese() {
           onChange={(e) => setDiocese({ ...diocese, name: e.target.value })}
         />
 
-        <LoadingButton
-          color='success'
-          disabled={!diocese?.name}
-          variant='contained'
-          onClick={handleAddDiocese}
-          sx={{ width: 150, alignSelf: 'end' }}
-        >
-          Dodaj
-        </LoadingButton>
+        <Stack direction='row' justifyContent='space-between'>
+          <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
+            Powrót
+          </LoadingButton>
+
+          <LoadingButton
+            color='success'
+            disabled={!diocese?.name}
+            variant='contained'
+            onClick={handleAddDiocese}
+            sx={{ width: 150, alignSelf: 'end' }}
+          >
+            Dodaj
+          </LoadingButton>
+        </Stack>
       </Grid>
     </>
   )
