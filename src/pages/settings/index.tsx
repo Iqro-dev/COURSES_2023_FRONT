@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack'
 export default function SettingsPage() {
   const [file, setFile] = useState<string>('')
 
-  const formData = new FormData()
+  const [formData] = useState(new FormData())
 
   const { getApiResponse } = useApi()
 
@@ -28,16 +28,30 @@ export default function SettingsPage() {
     if (e.target.files) {
       console.log(e.target.files[0])
       setFile(URL.createObjectURL(e.target.files[0]))
-      formData.append('file', e.target.files[0], e.target.files[0].name)
+      formData.append('image_type', 'header_image')
+      formData.append('file', e.target.files[0])
     }
   }
 
   const handleSaveSettings = () => {
     const settingsPromise = getApiResponse('/settings', Methods.POST, inputSettings)
 
-    const imagesPromise = getApiResponse('/settings/images', Methods.POST, formData)
+    const imagesPromise = getApiResponse('/settings/images', Methods.POST, formData.get('file'))
 
-    Promise.all([settingsPromise, imagesPromise])
+    console.log(formData.get('file'))
+
+    console.log(settingsPromise, imagesPromise)
+
+    Promise.all(
+      [settingsPromise, imagesPromise].map(
+        (promise) =>
+          new Promise(async (resolve, reject) => {
+            const response = await promise
+            if (!response.isSuccess) reject()
+            resolve(response)
+          }),
+      ),
+    )
       .then(() => {
         enqueueSnackbar('Zapisano', {
           autoHideDuration: 3000,
