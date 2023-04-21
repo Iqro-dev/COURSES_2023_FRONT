@@ -1,5 +1,5 @@
 type Instructor = {
-  id: number
+  id?: number
   firstName: string
   lastName: string
   description: string
@@ -7,7 +7,6 @@ type Instructor = {
   qualifications: string
   qualificationsAttachPaths?: string
   otherAttachPaths?: string
-  name: string
 }
 
 export type { Instructor }

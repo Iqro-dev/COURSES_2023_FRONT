@@ -8,8 +8,14 @@ import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useSnackbar } from 'notistack'
 
+type ImageObject = {
+  objectUrl?: string
+  file?: File
+}
+
 export default function SettingsPage() {
-  const [file, setFile] = useState<string>('')
+  const [logo, setLogo] = useState<ImageObject>({})
+  const [header, setHeader] = useState<ImageObject>({})
 
   const [formData] = useState(new FormData())
 
@@ -24,26 +30,49 @@ export default function SettingsPage() {
     headerColor: '#000000',
   })
 
-  function setFileInput(e: ChangeEvent<HTMLInputElement>) {
+  const createFormData = (img: File, type: string) => {
+    const formData = new FormData()
+
+    formData.append('image_type', type)
+    formData.append('file', img)
+
+    return formData
+  }
+
+  function setFileInput(e: ChangeEvent<HTMLInputElement>, type: string) {
     if (e.target.files) {
       console.log(e.target.files[0])
-      setFile(URL.createObjectURL(e.target.files[0]))
-      formData.append('image_type', 'header_image')
-      formData.append('file', e.target.files[0])
+      if (type === 'header_image')
+        setHeader({ objectUrl: URL.createObjectURL(e.target.files[0]), file: e.target.files[0] })
+      else if (type === 'logo_image')
+        setLogo({ objectUrl: URL.createObjectURL(e.target.files[0]), file: e.target.files[0] })
     }
   }
 
   const handleSaveSettings = () => {
     const settingsPromise = getApiResponse('/settings', Methods.POST, inputSettings)
 
-    const imagesPromise = getApiResponse('/settings/images', Methods.POST, formData.get('file'))
+    const imagePromises = []
 
-    console.log(formData.get('file'))
+    if (header.file)
+      imagePromises.push(
+        getApiResponse(
+          '/settings/images',
+          Methods.POST,
+          createFormData(header.file, 'header_image'),
+        ),
+      )
+    if (logo.file)
+      imagePromises.push(
+        getApiResponse('/settings/images', Methods.POST, createFormData(logo.file, 'logo_image')),
+      )
 
-    console.log(settingsPromise, imagesPromise)
+    console.log(formData)
+
+    console.log('promki', settingsPromise, ...imagePromises)
 
     Promise.all(
-      [settingsPromise, imagesPromise].map(
+      [settingsPromise, ...imagePromises].map(
         (promise) =>
           new Promise(async (resolve, reject) => {
             const response = await promise
@@ -133,24 +162,50 @@ export default function SettingsPage() {
           </Box>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Typography variant='h5'>Zdjęcie strony</Typography>
+        <Grid container direction='row'>
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5'>Zdjęcie strony</Typography>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
-            <Image src={file} height='200px' duration={500} style={{ borderRadius: '12px' }} />
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
+              <Image
+                src={header.objectUrl ?? ''}
+                height='200px'
+                duration={500}
+                style={{ borderRadius: '12px' }}
+              />
 
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-              <LoadingButton variant='contained' component='label'>
-                Dodaj zdjęcie
-                <input type='file' hidden onChange={(e) => setFileInput(e)} />
-              </LoadingButton>
-
-              <Button variant='contained' color='success' onClick={handleSaveSettings}>
-                Zapisz
-              </Button>
+              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <LoadingButton variant='contained' component='label'>
+                  Dodaj zdjęcie
+                  <input type='file' hidden onChange={(e) => setFileInput(e, 'header_image')} />
+                </LoadingButton>
+              </Box>
             </Box>
-          </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography variant='h5'>Logo strony</Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
+              <Image
+                src={logo.objectUrl ?? ''}
+                height='200px'
+                duration={500}
+                style={{ borderRadius: '12px' }}
+              />
+
+              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <LoadingButton variant='contained' component='label'>
+                  Dodaj zdjęcie
+                  <input type='file' hidden onChange={(e) => setFileInput(e, 'logo_image')} />
+                </LoadingButton>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
+
+        <Button variant='contained' color='success' onClick={handleSaveSettings}>
+          Zapisz
+        </Button>
       </Grid>
     </>
   )
