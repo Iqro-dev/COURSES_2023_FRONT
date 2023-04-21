@@ -11,6 +11,8 @@ import { useSnackbar } from 'notistack'
 export default function SettingsPage() {
   const [file, setFile] = useState<string>('')
 
+  const formData = new FormData()
+
   const { getApiResponse } = useApi()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -24,27 +26,34 @@ export default function SettingsPage() {
 
   function setFileInput(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
+      console.log(e.target.files[0])
       setFile(URL.createObjectURL(e.target.files[0]))
+      formData.append('file', e.target.files[0], e.target.files[0].name)
     }
   }
 
   const handleSaveSettings = () => {
-    getApiResponse('/settings', Methods.POST, inputSettings).then((res) => {
-      if (!res.isSuccess)
+    const settingsPromise = getApiResponse('/settings', Methods.POST, inputSettings)
+
+    const imagesPromise = getApiResponse('/settings/images', Methods.POST, formData)
+
+    Promise.all([settingsPromise, imagesPromise])
+      .then(() => {
+        enqueueSnackbar('Zapisano', {
+          autoHideDuration: 3000,
+          preventDuplicate: true,
+          variant: 'success',
+        })
+
+        return reload()
+      })
+      .catch(() => {
         return enqueueSnackbar('Coś poszło nie tak', {
           autoHideDuration: 3000,
           preventDuplicate: true,
           variant: 'error',
         })
-
-      enqueueSnackbar('Zapisano', {
-        autoHideDuration: 3000,
-        preventDuplicate: true,
-        variant: 'success',
       })
-
-      reload()
-    })
   }
 
   useEffect(() => {
