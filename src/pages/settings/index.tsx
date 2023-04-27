@@ -1,7 +1,6 @@
 import { LoadingButton } from '@mui/lab'
 import {
   Box,
-  Button,
   Grid,
   IconButton,
   ImageListItem,
@@ -21,18 +20,15 @@ import { ImageObject } from '../../types/settings/image-object'
 import { useImages } from '../../hooks/settings/use-images'
 
 export default function SettingsPage() {
+  const [loading, setLoading] = useState(false)
+  const { header: headerImage, logo: logoImage, loaded: loadedImages } = useImages()
+
   const [logo, setLogo] = useState<ImageObject>({})
   const [header, setHeader] = useState<ImageObject>({})
 
-  const { logo: logoImage, loaded: loadedImages } = useImages()
-
-  useEffect(() => {
-    console.log('consolelele', logoImage, loadedImages)
-  }, [loadedImages])
-
   const imagesArray = [
+    { title: 'Dodaj zdjęcie nagłówka', set: setHeader, value: header, type: 'header_image' },
     { title: 'Dodaj logo', set: setLogo, value: logo, type: 'logo_image' },
-    { title: 'Dodaj zdjęcie', set: setHeader, value: header, type: 'header_image' },
   ]
 
   const [formData] = useState(new FormData())
@@ -68,6 +64,7 @@ export default function SettingsPage() {
   }
 
   const handleSaveSettings = () => {
+    setLoading(true)
     const settingsPromise = getApiResponse('/settings', Methods.POST, inputSettings)
 
     const imagePromises = []
@@ -81,6 +78,9 @@ export default function SettingsPage() {
           true,
         ),
       )
+    else if (logo.delete)
+      imagePromises.push(getApiResponse('/settings/images?type=header_image', Methods.DELETE))
+
     if (logo.file)
       imagePromises.push(
         getApiResponse(
@@ -90,6 +90,8 @@ export default function SettingsPage() {
           true,
         ),
       )
+    else if (logo.delete)
+      imagePromises.push(getApiResponse('/settings/images?type=logo_image', Methods.DELETE))
 
     console.log(formData)
 
@@ -112,20 +114,28 @@ export default function SettingsPage() {
           variant: 'success',
         })
 
-        return reload()
+        setLoading(false)
+        reload()
       })
       .catch(() => {
-        return enqueueSnackbar('Coś poszło nie tak', {
+        enqueueSnackbar('Coś poszło nie tak', {
           autoHideDuration: 3000,
           preventDuplicate: true,
           variant: 'error',
         })
+
+        setLoading(false)
       })
   }
 
   useEffect(() => {
     setInputSettings(settings)
   }, [loaded])
+
+  useEffect(() => {
+    setLogo(logoImage)
+    setHeader(headerImage)
+  }, [loadedImages])
 
   return (
     <>
@@ -188,7 +198,7 @@ export default function SettingsPage() {
 
         <Grid container direction='row' gap={2}>
           {imagesArray.map(({ title, set, value, type }, index) => (
-            <Grid item xs={12} md={6} key={index}>
+            <Grid item xs={12} md={5} key={index}>
               <Typography variant='h5'>{title}</Typography>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
@@ -207,7 +217,7 @@ export default function SettingsPage() {
                       actionIcon={
                         <IconButton
                           sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
-                          onClick={() => set({})}
+                          onClick={() => set({ delete: true })}
                         >
                           <Delete />
                         </IconButton>
@@ -229,9 +239,14 @@ export default function SettingsPage() {
           ))}
         </Grid>
 
-        <Button variant='contained' color='success' onClick={handleSaveSettings}>
+        <LoadingButton
+          loading={loading}
+          variant='contained'
+          color='success'
+          onClick={handleSaveSettings}
+        >
           Zapisz
-        </Button>
+        </LoadingButton>
       </Grid>
     </>
   )
