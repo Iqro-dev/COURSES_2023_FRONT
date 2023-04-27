@@ -12,10 +12,13 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Toolbar,
 } from '@mui/material'
 import { FormEvent, useContext, useState } from 'react'
 import { AuthContext } from '../../providers/auth-provider'
 import { useNavigate } from 'react-router-dom'
+import { useImages } from '../../hooks/settings/use-images'
+import Image from 'mui-image'
 
 export default function LoginPage() {
   const [values, setValues] = useState({
@@ -24,6 +27,8 @@ export default function LoginPage() {
     password: '',
     loading: false,
   })
+
+  const { logo, header } = useImages()
 
   const { login: _login } = useContext(AuthContext)
 
@@ -73,10 +78,21 @@ export default function LoginPage() {
 
   return (
     <>
+      <Toolbar variant='dense' />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {[
+          { src: header, height: 150 },
+          { src: logo, height: 200, width: 200 },
+        ]
+          .map((p) => ({ ...p, src: p.src.objectUrl ?? '' }))
+          .map((props) => (
+            <Image {...props} />
+          ))}
+      </Box>
+
       <Container component='main' maxWidth='xs'>
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
