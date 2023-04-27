@@ -2,8 +2,8 @@ import { Methods } from '../types/fetch-methods'
 import { ApiResponse } from '../types/api-response'
 
 export function useApi() {
-  const getApiResponse = async <T,>(url: string, method: Methods, data?: any) => {
-    const res = await fetchApi<T>(url, method, data)
+  const getApiResponse = async <T,>(url: string, method: Methods, data?: any, omitParse = false) => {
+    const res = await fetchApi<T>(url, method, data, omitParse)
 
     return res
   }
@@ -17,6 +17,7 @@ export async function fetchApi<T>(
   url: string,
   method: Methods,
   data?: any,
+  omitParse = false
 ): Promise<ApiResponse<T>> {
   const token = localStorage.getItem('auth.token')
 
@@ -30,7 +31,7 @@ export async function fetchApi<T>(
         Authorization: `Bearer ${token}`,
         'Access-Control-Allow-Origin': '*',
       },
-      body: JSON.stringify(data),
+      body: omitParse ? data : JSON.stringify(data),
     })
   } catch (error: Error | any) {
     const { status, data } = error.response ?? { status: 0 }

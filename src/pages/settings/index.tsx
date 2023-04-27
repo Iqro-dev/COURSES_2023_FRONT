@@ -60,11 +60,17 @@ export default function SettingsPage() {
           '/settings/images',
           Methods.POST,
           createFormData(header.file, 'header_image'),
+          true,
         ),
       )
     if (logo.file)
       imagePromises.push(
-        getApiResponse('/settings/images', Methods.POST, createFormData(logo.file, 'logo_image')),
+        getApiResponse(
+          '/settings/images',
+          Methods.POST,
+          createFormData(logo.file, 'logo_image'),
+          true,
+        ),
       )
 
     console.log(formData)
