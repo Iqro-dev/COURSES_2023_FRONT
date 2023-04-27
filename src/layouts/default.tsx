@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from '../components/navbar'
-import { useSettings } from '../hooks/use-settings'
+import { useSettings } from '../hooks/settings/use-settings'
 import { Typography } from '@mui/material'
 
 export default function DefaultLayout() {

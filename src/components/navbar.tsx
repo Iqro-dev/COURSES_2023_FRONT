@@ -1,6 +1,6 @@
 import { Box, AppBar, Toolbar } from '@mui/material'
 import { PropsWithChildren } from 'react'
-import { useSettings } from '../hooks/use-settings'
+import { useSettings } from '../hooks/settings/use-settings'
 
 export default function Navbar({ children }: PropsWithChildren) {
   const { settings } = useSettings()

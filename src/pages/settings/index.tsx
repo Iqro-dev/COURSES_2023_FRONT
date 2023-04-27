@@ -1,21 +1,39 @@
 import { LoadingButton } from '@mui/lab'
-import { Box, Button, Grid, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  ImageListItem,
+  ImageListItemBar,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { SketchPicker } from 'react-color'
 import Image from 'mui-image'
-import { useSettings } from '../../hooks/use-settings'
+import { useSettings } from '../../hooks/settings/use-settings'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useSnackbar } from 'notistack'
-
-type ImageObject = {
-  objectUrl?: string
-  file?: File
-}
+import { Delete } from '@mui/icons-material'
+import { ImageObject } from '../../types/settings/image-object'
+import { useImages } from '../../hooks/settings/use-images'
 
 export default function SettingsPage() {
   const [logo, setLogo] = useState<ImageObject>({})
   const [header, setHeader] = useState<ImageObject>({})
+
+  const { logo: logoImage, loaded: loadedImages } = useImages()
+
+  useEffect(() => {
+    console.log('consolelele', logoImage, loadedImages)
+  }, [loadedImages])
+
+  const imagesArray = [
+    { title: 'Dodaj logo', set: setLogo, value: logo, type: 'logo_image' },
+    { title: 'Dodaj zdjęcie', set: setHeader, value: header, type: 'header_image' },
+  ]
 
   const [formData] = useState(new FormData())
 
@@ -168,45 +186,47 @@ export default function SettingsPage() {
           </Box>
         </Grid>
 
-        <Grid container direction='row'>
-          <Grid item xs={12} md={6}>
-            <Typography variant='h5'>Zdjęcie strony</Typography>
+        <Grid container direction='row' gap={2}>
+          {imagesArray.map(({ title, set, value, type }, index) => (
+            <Grid item xs={12} md={6} key={index}>
+              <Typography variant='h5'>{title}</Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
-              <Image
-                src={header.objectUrl ?? ''}
-                height='200px'
-                duration={500}
-                style={{ borderRadius: '12px' }}
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
+                <ImageListItem>
+                  <Image
+                    src={value.objectUrl ?? ''}
+                    height='200px'
+                    duration={500}
+                    style={{ borderRadius: '12px' }}
+                  />
 
-              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <LoadingButton variant='contained' component='label'>
-                  Dodaj zdjęcie
-                  <input type='file' hidden onChange={(e) => setFileInput(e, 'header_image')} />
-                </LoadingButton>
+                  {value.file && (
+                    <ImageListItemBar
+                      title={value.file?.name ?? 'Brak zdjęcia'}
+                      sx={{ borderBottomLeftRadius: '12px', borderBottomRightRadius: '12px' }}
+                      actionIcon={
+                        <IconButton
+                          sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                          onClick={() => set({})}
+                        >
+                          <Delete />
+                        </IconButton>
+                      }
+                    />
+                  )}
+                </ImageListItem>
+
+                <Box
+                  sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+                >
+                  <LoadingButton variant='contained' component='label'>
+                    Dodaj zdjęcie
+                    <input type='file' hidden onChange={(e) => setFileInput(e, type)} />
+                  </LoadingButton>
+                </Box>
               </Box>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography variant='h5'>Logo strony</Typography>
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 4 }}>
-              <Image
-                src={logo.objectUrl ?? ''}
-                height='200px'
-                duration={500}
-                style={{ borderRadius: '12px' }}
-              />
-
-              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <LoadingButton variant='contained' component='label'>
-                  Dodaj zdjęcie
-                  <input type='file' hidden onChange={(e) => setFileInput(e, 'logo_image')} />
-                </LoadingButton>
-              </Box>
-            </Box>
-          </Grid>
+            </Grid>
+          ))}
         </Grid>
 
         <Button variant='contained' color='success' onClick={handleSaveSettings}>

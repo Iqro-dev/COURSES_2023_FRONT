@@ -21,7 +21,7 @@ import Navbar from '../components/navbar'
 import Sidebar from '../components/sidebar'
 import { SidebarItems } from '../components/sidebar-items'
 import { AuthContext } from '../providers/auth-provider'
-import { useSettings } from '../hooks/use-settings'
+import { useSettings } from '../hooks/settings/use-settings'
 
 export default function DashboardLayout() {
   const { settings } = useSettings()
