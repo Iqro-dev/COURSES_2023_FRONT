@@ -1,32 +1,71 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import DashboardLayout from './layouts/dashboard'
 import DefaultLayout from './layouts/default'
-import AdminList from './pages/admin'
-import DictionaryList from './pages/dictionary'
+import AdminsList from './pages/admin'
+import DiocesesList from './pages/diocese'
 import Home from './pages/home'
-import LecturerList from './pages/lecturer'
+import InstructorsList from './pages/instructor'
 import LoginPage from './pages/login'
 import NoMatch from './pages/no-match'
 import Settings from './pages/settings'
+import DioceseDetails from './pages/diocese/details'
+import ParishesList from './pages/parish'
+import ParishDetails from './pages/parish/details'
+import AddDiocese from './pages/diocese/add'
+import AddParish from './pages/parish/add'
+import AuthRoute from './components/routes/auth-route'
+import AddInstructor from './pages/instructor/add'
 
 export function RoutesTree() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<DefaultLayout />}>
+        <Route
+          path='/'
+          element={
+            <AuthRoute>
+              <DefaultLayout />
+            </AuthRoute>
+          }
+        >
           <Route index element={<LoginPage />} />
 
           <Route path='*' element={<NoMatch />} />
         </Route>
 
-        <Route path='dashboard' element={<DashboardLayout />}>
+        <Route
+          path='dashboard'
+          element={
+            <AuthRoute>
+              <DashboardLayout />
+            </AuthRoute>
+          }
+        >
           <Route index element={<Home />} />
 
-          <Route path='administrators' element={<AdminList />} />
+          <Route path='administrators' element={<AdminsList />} />
 
-          <Route path='lecturers' element={<LecturerList />} />
+          <Route path='instructors'>
+            <Route index element={<InstructorsList />} />
 
-          <Route path='dictionaries' element={<DictionaryList />} />
+            <Route path='add' element={<AddInstructor />} />
+          </Route>
+
+          <Route path='dioceses'>
+            <Route index element={<DiocesesList />} />
+
+            <Route path='details' element={<DioceseDetails />} />
+
+            <Route path='add' element={<AddDiocese />} />
+          </Route>
+
+          <Route path='parishes'>
+            <Route index element={<ParishesList />} />
+
+            <Route path='details' element={<ParishDetails />} />
+
+            <Route path='add' element={<AddParish />} />
+          </Route>
 
           <Route path='settings' element={<Settings />} />
 

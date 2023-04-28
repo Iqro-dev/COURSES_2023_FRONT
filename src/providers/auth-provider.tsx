@@ -2,30 +2,18 @@ import { createContext, PropsWithChildren, useEffect, useState } from 'react'
 import { useApi } from '../hooks/use-api'
 import { Methods } from '../types/fetch-methods'
 import Roles from '../types/roles'
-
-type AuthUser = {
-  id: number
-  email: string
-  role: string
-  lastLoginDate: string
-  admin: {
-    id: number
-    firstName: string
-    lastName: string
-    phoneNumber: string
-  }
-}
+import { User } from '../types/user'
 
 interface DefaultContext {
-  user: AuthUser
-  auth: { token: string; time: number, role: Roles, id: number }
+  user: User
+  auth: { token: string; time: number; role: Roles; id: number; loginStatus: boolean | undefined }
   login: (email: string, password: string) => Promise<{ isSuccess: boolean; code: number }>
   logout: () => void
 }
 
 const defaultContext: DefaultContext = {
-  user: { role: localStorage.getItem('auth.role') ?? '' } as AuthUser,
-  auth: { token: '', time: 0, role: '' as Roles, id: 0 },
+  user: { role: localStorage.getItem('auth.role') ?? '' } as User,
+  auth: { token: '', time: 0, role: '' as Roles, id: 0, loginStatus: undefined },
   login: async () => ({ isSuccess: false, code: 0 }),
   logout: () => '',
 }
@@ -38,18 +26,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [context, setContext] = useState<DefaultContext>({
     ...defaultContext,
     auth: {
+      loginStatus: undefined,
       token: localStorage.getItem('auth.token') ?? '',
       time: +(localStorage.getItem('auth.time') ?? '0'),
       role: localStorage.getItem('auth.role') as Roles,
       id: +(localStorage.getItem('auth.id') ?? '0'),
-    }
+    },
   })
 
   const login = async (email: string, password: string) => {
     email = email.trim()
     if (!email && !password) return { ...(await loginFromStorage()), code: 0 }
 
-    const res = await getApiResponse<{ token: string; time: number; user: AuthUser }>(
+    const res = await getApiResponse<{ token: string; time: number; user: User }>(
       '/login',
       Methods.POST,
       {
@@ -58,7 +47,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       },
     )
 
-    if (!res.isSuccess) { return { isSuccess: false, code: res.code } }
+    if (!res.isSuccess) {
+      return { isSuccess: false, code: res.code }
+    }
 
     const { token, user } = res.data
 
@@ -79,22 +70,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const res = await getUserData(id)
 
     if (res.isSuccess && typeof res.data !== 'string') {
-      const auth = { ...context.auth, time }
+      const auth = { ...context.auth, time, loginStatus: true }
       const _context = { ...context, user: res.data, auth }
       setContext(_context)
 
       return { isSuccess: true }
     }
 
+    setContext({ ...context, auth: { ...context.auth, time, loginStatus: false } })
     return { isSuccess: false }
   }
 
   const getUserData = async (
     id: number,
   ): Promise<
-    { isSuccess: false; code: number } | { isSuccess: true; code: number; data: AuthUser }
+    { isSuccess: false; code: number } | { isSuccess: true; code: number; data: User }
   > => {
-    const res = await getApiResponse<AuthUser>(`/users?id=${id}`, Methods.GET)
+    const res = await getApiResponse<User>(`/users?id=${id}`, Methods.GET)
 
     if (!res.isSuccess) return { isSuccess: false, code: res.code }
 
@@ -107,7 +99,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const time = +(localStorage.getItem('auth.time') ?? '0')
     const role = localStorage.getItem('auth.role') as Roles
 
-    if (token && Date.now() > time) {
+    const OneDay = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
+
+    if (token && time > OneDay) {
       const { isSuccess } = await loadAuth(id, time)
 
       if (isSuccess) {
@@ -116,6 +110,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       }
     }
 
+    setContext({ ...context, auth: { ...context.auth, time, loginStatus: false } })
     return { isSuccess: false }
   }
 

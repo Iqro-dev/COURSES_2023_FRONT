@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './providers/auth-provider'
 import { RoutesTree } from './routes'
+import { SnackbarProvider } from 'notistack'
 
 const theme = createTheme({
   palette: {
@@ -31,11 +32,13 @@ const theme = createTheme({
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <CssBaseline />
-        <RoutesTree />
-      </AuthProvider>
-    </ThemeProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <CssBaseline />
+          <RoutesTree />
+        </AuthProvider>
+      </ThemeProvider>
+    </SnackbarProvider>
   </React.StrictMode>,
 )

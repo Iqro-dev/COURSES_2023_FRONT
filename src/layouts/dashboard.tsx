@@ -1,4 +1,4 @@
-import { Logout } from '@mui/icons-material'
+import { Logout, Menu as MenuIcon } from '@mui/icons-material'
 import {
   Avatar,
   Box,
@@ -9,9 +9,11 @@ import {
   Menu,
   MenuItem,
   Paper,
+  Stack,
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
 import { useState, useContext } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
@@ -19,16 +21,29 @@ import Navbar from '../components/navbar'
 import Sidebar from '../components/sidebar'
 import { SidebarItems } from '../components/sidebar-items'
 import { AuthContext } from '../providers/auth-provider'
+import { useSettings } from '../hooks/settings/use-settings'
 
 export default function DashboardLayout() {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const openMenu = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
+  const { settings } = useSettings()
+
+  const matches = useMediaQuery('(min-width:800px)')
+
+  const [anchorEl, setAnchorEl] = useState({
+    account: null,
+    menu: null,
+  })
+
+  const openAccountMenu = Boolean(anchorEl.account)
+
+  const openSidebarMenu = Boolean(anchorEl.menu)
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>, anchor: string) => {
+    setAnchorEl({ ...anchorEl, [anchor]: event.currentTarget })
     console.log(user)
   }
-  const handleClose = () => {
-    setAnchorEl(null)
+
+  const handleClose = (anchor: string) => {
+    setAnchorEl({ ...anchorEl, [anchor]: null })
   }
 
   const { logout, user } = useContext(AuthContext)
@@ -38,30 +53,75 @@ export default function DashboardLayout() {
     <>
       <Box sx={{ height: '100vh', display: 'flex' }}>
         <Navbar>
-          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-            <Typography variant='subtitle1'>{user.email}</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 2,
+              width: '100%',
+            }}
+          >
+            <Stack direction='row' alignItems='center' gap={2}>
+              {!matches && (
+                <Box>
+                  <IconButton
+                    onClick={(e) => handleClick(e, 'menu')}
+                    size='small'
+                    id='account-menu-button'
+                    color='inherit'
+                    aria-controls={openSidebarMenu ? 'sidebar-menu' : undefined}
+                    aria-haspopup='true'
+                    aria-expanded={openSidebarMenu ? 'true' : undefined}
+                  >
+                    <MenuIcon />
+                  </IconButton>
 
-            <Tooltip title='Konto'>
-              <IconButton
-                onClick={handleClick}
-                size='small'
-                id='basic-button'
-                aria-controls={openMenu ? 'basic-menu' : undefined}
-                aria-haspopup='true'
-                aria-expanded={openMenu ? 'true' : undefined}
-              >
-                <Avatar sx={{ width: 32, height: 32 }}>{user.email?.slice(0, 1) ?? ''}</Avatar>
-              </IconButton>
-            </Tooltip>
+                  <Menu
+                    id='sidebar-menu'
+                    anchorEl={anchorEl.menu}
+                    open={openSidebarMenu}
+                    onClose={() => handleClose('menu')}
+                    MenuListProps={{
+                      'aria-labelledby': 'basic-button',
+                    }}
+                  >
+                    <SidebarItems />
+                  </Menu>
+                </Box>
+              )}
+
+              <Typography variant='subtitle1'>
+                {settings.headerText ?? 'Kursy przedmałżeńskie'}
+              </Typography>
+            </Stack>
+
+            <Stack direction='row' alignItems='center' gap={2}>
+              {matches && <Typography variant='subtitle1'>{user.email}</Typography>}
+
+              <Tooltip title='Konto'>
+                <IconButton
+                  onClick={(e) => handleClick(e, 'account')}
+                  size='small'
+                  id='account-menu-button'
+                  aria-controls={openAccountMenu ? 'account-menu' : undefined}
+                  aria-haspopup='true'
+                  aria-expanded={openAccountMenu ? 'true' : undefined}
+                >
+                  <Avatar sx={{ width: 32, height: 32 }}>{user.email?.slice(0, 1) ?? ''}</Avatar>
+                </IconButton>
+              </Tooltip>
+            </Stack>
           </Box>
 
           <Menu
-            id='basic-menu'
-            anchorEl={anchorEl}
-            open={openMenu}
-            onClose={handleClose}
+            id='account-menu'
+            anchorEl={anchorEl.account}
+            open={openAccountMenu}
+            onClose={() => handleClose('account')}
             MenuListProps={{
-              'aria-labelledby': 'basic-button',
+              'aria-labelledby': 'account-menu-button',
             }}
             PaperProps={{
               elevation: 0,
@@ -94,7 +154,9 @@ export default function DashboardLayout() {
               <Avatar />
               Moje konto
             </MenuItem>
+
             <Divider />
+
             <MenuItem
               onClick={() => {
                 logout()
@@ -108,9 +170,12 @@ export default function DashboardLayout() {
             </MenuItem>
           </Menu>
         </Navbar>
-        <Sidebar>
-          <SidebarItems />
-        </Sidebar>
+
+        {matches && (
+          <Sidebar>
+            <SidebarItems />
+          </Sidebar>
+        )}
 
         <Box
           sx={{
