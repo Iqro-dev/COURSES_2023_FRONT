@@ -17,7 +17,6 @@ import {
 import { FormEvent, useContext, useState } from 'react'
 import { AuthContext } from '../../providers/auth-provider'
 import { useNavigate } from 'react-router-dom'
-import { useImages } from '../../hooks/settings/use-images'
 import Image from 'mui-image'
 
 export default function LoginPage() {
@@ -27,8 +26,6 @@ export default function LoginPage() {
     password: '',
     loading: false,
   })
-
-  const { logo, header } = useImages()
 
   const { login: _login } = useContext(AuthContext)
 
@@ -81,12 +78,16 @@ export default function LoginPage() {
       <Toolbar variant='dense' />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {[
-          { src: header, height: 150 },
-          { src: logo, height: 200, width: 200 },
+          { src: 'https://openapps.dev/api/settings/images?type=header_image', height: 150 },
+          {
+            src: 'https://openapps.dev/api/settings/images?type=logo_image',
+            height: 200,
+            width: 200,
+          },
         ]
-          .map((p) => ({ ...p, src: p.src.objectUrl ?? '' }))
+          .map((p) => ({ ...p, src: p.src ?? '' }))
           .map((props) => (
-            <Image {...props} />
+            <Image {...props} key={props.height} />
           ))}
       </Box>
 
