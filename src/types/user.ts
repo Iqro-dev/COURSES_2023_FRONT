@@ -5,11 +5,11 @@ import Roles from './roles'
 type User = {
   id: number
   email: string
-  role: Roles
-  status: boolean
+  role?: Roles
+  status?: boolean
   lastLoginDate?: Date
-  Admin?: Admin
-  Instructor?: Instructor
+  admin?: Admin
+  instructor: Instructor
 }
 
 export type { User }

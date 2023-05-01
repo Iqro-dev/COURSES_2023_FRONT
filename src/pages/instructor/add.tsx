@@ -1,25 +1,42 @@
-import { Box, Grid, TextField, Typography } from '@mui/material'
+import { Box, FormControl, FormHelperText, Grid, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { useValidationResolver } from '../../hooks/forms/use-validate'
 import * as Yup from 'yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { InstructorPost } from '../../types/instructor/instructor-post'
+import { useParishes } from '../../hooks/parish/use-parishes'
+import { useEffect, useState } from 'react'
+import { useApi } from '../../hooks/use-api'
+import { Methods } from '../../types/fetch-methods'
+import { useSnackbar } from 'notistack'
+import { useNavigate } from 'react-router-dom'
 
 export default function AddInstructor() {
   const validationSchema = Yup.object().shape({
     email: Yup.string().email().required('E-mail jest wymagany'),
-    password: Yup.string().required('Hasło jest wymagane'),
+    password: Yup.string().required('Hasło jest wymagane').min(4, 'Hasło musi mieć przynajmniej 4 znaki'),
     repeatPassword: Yup.string()
       .required('Hasło jest wymagane')
-      .oneOf([Yup.ref('password'), ''], 'Hasła muszą być takie same'),
+      .oneOf([Yup.ref('password'), ''], 'Hasła muszą być takie same')
+      .min(4, 'Hasło musi mieć przynajmniej 4 znaki'),
     firstName: Yup.string().required('Imię jest wymagane'),
     lastName: Yup.string().required('Nazwisko jest wymagane'),
     description: Yup.string().required('Opis jest wymagany'),
     qualifications: Yup.string().required('Kwalifikacje są wymagane'),
-    parishesIds: Yup.array().of(Yup.number()).required('Proszę wybrać parafię'),
+    parishesIds: Yup.array().of(Yup.number()).min(1, 'Przynajmniej jedna parafia jest wymagana'),
   })
 
   const resolver = useValidationResolver(validationSchema)
+
+  const [selectedParishes, setSelectedParishes] = useState<number[]>([])
+
+  const { parishes } = useParishes()
+
+  const navigate = useNavigate()
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const { getApiResponse } = useApi()
 
   const {
     handleSubmit,
@@ -32,13 +49,15 @@ export default function AddInstructor() {
       ...register(name),
     }
 
-    if (!!errors[name])
+    if (!!errors[name]) {
       return {
         ...commonProps,
         error: true,
         helperText: errors[name]?.message?.toString(),
       }
-    return { ...commonProps }
+    }
+
+    return { ...commonProps, error: false, helperText: '' }
   }
 
   const onValid: SubmitHandler<any> = (formData) => {
@@ -58,8 +77,26 @@ export default function AddInstructor() {
       },
     }
 
-    console.log(data)
+    getApiResponse('/users', Methods.POST, data).then((res) => {
+      console.log(res)
+      if (!res.isSuccess) return enqueueSnackbar('Coś poszło nie tak', {
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+        variant: 'error',
+      })
+
+      enqueueSnackbar('Zapisano', {
+        autoHideDuration: 3000,
+        preventDuplicate: true,
+        variant: 'success',
+      })
+      navigate(-1)
+    })
   }
+
+  useEffect(() => {
+    console.log(parishes)
+  }, [parishes])
 
   return (
     <>
@@ -92,9 +129,44 @@ export default function AddInstructor() {
 
           <TextField label={'Kwalifikacje'} id='qualifications' {...inputProps('qualifications')} />
 
-          <LoadingButton color='success' variant='contained' type='submit'>
-            <Typography>Dodaj</Typography>
-          </LoadingButton>
+          <FormControl {...inputProps('parishesIds')}>
+            <InputLabel>Parafie</InputLabel>
+
+            <Select
+              id="parishesIds"
+              multiple
+              {...inputProps('parishesIds')}
+              value={selectedParishes}
+              onChange={(e) => setSelectedParishes(e.target.value as number[])}
+              input={<OutlinedInput label="Name" />}
+            >
+              {parishes?.map((parish) => (
+                <MenuItem
+                  key={parish.id}
+                  value={parish.id}
+                >
+                  {parish.name}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <FormHelperText>{inputProps('parishesIds').helperText}</FormHelperText>
+          </FormControl>
+
+          <Stack direction='row' justifyContent='space-between'>
+            <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
+              Powrót
+            </LoadingButton>
+
+            <LoadingButton
+              color='success'
+              variant='contained'
+              type='submit'
+              sx={{ width: 150, alignSelf: 'end' }}
+            >
+              Dodaj
+            </LoadingButton>
+          </Stack>
         </Box>
       </Grid>
     </>
