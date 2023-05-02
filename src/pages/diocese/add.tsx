@@ -1,23 +1,50 @@
-import { Grid, Stack, TextField, Typography } from '@mui/material'
-import { Diocese } from '../../types/diocese/diocese'
-import { useState } from 'react'
+import { Box, Grid, Stack, TextField, Typography } from '@mui/material'
+import { useValidationResolver } from '../../hooks/forms/use-validate'
 import { LoadingButton } from '@mui/lab'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
+import * as Yup from 'yup'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 export default function AddDiocese() {
-  const [diocese, setDiocese] = useState<Diocese>()
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Nazwa jest wymagana'),
+  })
 
-  const { getApiResponse } = useApi()
+  const resolver = useValidationResolver(validationSchema)
 
-  const { enqueueSnackbar } = useSnackbar()
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({ resolver })
 
-  const navigate = useNavigate()
+  const inputProps = (name: string) => {
+    const commonProps = {
+      ...register(name),
+    }
 
-  const handleAddDiocese = () => {
-    getApiResponse('/dioceses', Methods.POST, diocese).then((res) => {
+    if (!!errors[name]) {
+      return {
+        ...commonProps,
+        error: true,
+        helperText: errors[name]?.message?.toString(),
+      }
+    }
+
+    return { ...commonProps, error: false, helperText: '' }
+  }
+
+  const onValid: SubmitHandler<any> = (formData) => {
+    console.log('valid', formData)
+
+    const data = {
+      name: formData.name
+    }
+
+    getApiResponse('/dioceses', Methods.POST, data).then((res) => {
       if (!res.isSuccess)
         return enqueueSnackbar('Coś poszło nie tak', {
           autoHideDuration: 3000,
@@ -35,32 +62,43 @@ export default function AddDiocese() {
     })
   }
 
+  const { getApiResponse } = useApi()
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const navigate = useNavigate()
+
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
         <Typography variant='h4'>Dodaj diecezje</Typography>
 
-        <TextField
-          label={'Nazwa diecezji'}
-          required
-          onChange={(e) => setDiocese({ ...diocese, name: e.target.value })}
-        />
+        <Box
+          component='form'
+          onSubmit={handleSubmit(onValid)}
+          sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
+        >
+          <TextField
+            label={'Nazwa diecezji'}
+            id='name'
+            {...inputProps('name')}
+          />
 
-        <Stack direction='row' justifyContent='space-between'>
-          <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
-            Powrót
-          </LoadingButton>
+          <Stack direction='row' justifyContent='space-between'>
+            <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
+              Powrót
+            </LoadingButton>
 
-          <LoadingButton
-            color='success'
-            disabled={!diocese?.name}
-            variant='contained'
-            onClick={handleAddDiocese}
-            sx={{ width: 150, alignSelf: 'end' }}
-          >
-            Dodaj
-          </LoadingButton>
-        </Stack>
+            <LoadingButton
+              color='success'
+              variant='contained'
+              type='submit'
+              sx={{ width: 150, alignSelf: 'end' }}
+            >
+              Dodaj
+            </LoadingButton>
+          </Stack>
+        </Box>
       </Grid>
     </>
   )

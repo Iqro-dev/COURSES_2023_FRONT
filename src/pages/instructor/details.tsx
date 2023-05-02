@@ -173,7 +173,7 @@ export default function InstructorDetails() {
             Powrót
           </Button>
 
-          <Button onClick={handleEdit} disabled={instructorDetails.instructor.parishesIds?.length === 0 || instructorDetails?.instructor?.qualifications === '' || instructorDetails?.instructor?.description === '' || instructorDetails?.instructor?.lastName === '' || instructorDetails?.instructor?.firstName === '' || instructorDetails?.email === ''} variant='contained' color='success'>
+          <Button onClick={handleEdit} disabled={instructorDetails.instructor.parishesIds?.length === 0 || !instructorDetails?.instructor?.qualifications || !instructorDetails?.instructor?.description || !instructorDetails?.instructor?.lastName || !instructorDetails?.instructor?.firstName || !instructorDetails?.email} variant='contained' color='success'>
             Zapisz
           </Button>
         </Stack>
