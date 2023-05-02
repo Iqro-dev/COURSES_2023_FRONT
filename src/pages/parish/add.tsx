@@ -1,27 +1,61 @@
-import { Grid, Stack, TextField, Typography } from '@mui/material'
+import { Box, Grid, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from 'notistack'
-import { Parish } from '../../types/parish/parish'
 import {
   DiocesesAutocomplete,
   diocesesOptions,
 } from '../../components/inputs/dioceses-autocomplete'
+import * as Yup from 'yup'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { useValidationResolver } from '../../hooks/forms/use-validate'
 
 export default function AddParish() {
-  const [parish, setParish] = useState<Parish>({ name: '', address: '', dioceseId: -1 })
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Nazwa jest wymagana'),
+    address: Yup.string().required('Nazwa jest wymagana'),
+  })
 
-  const { getApiResponse } = useApi()
+  const resolver = useValidationResolver(validationSchema)
 
-  const { enqueueSnackbar } = useSnackbar()
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({ resolver })
 
-  const navigate = useNavigate()
+  const inputProps = (name: string) => {
+    const commonProps = {
+      ...register(name),
+    }
 
-  const handleAddParish = () => {
-    getApiResponse('/parishes', Methods.POST, parish).then((res) => {
+    if (!!errors[name]) {
+      return {
+        ...commonProps,
+        error: true,
+        helperText: errors[name]?.message?.toString(),
+      }
+    }
+
+    return { ...commonProps, error: false, helperText: '' }
+  }
+
+  const [checked, setChecked] = useState(false)
+
+  const onValid: SubmitHandler<any> = (formData) => {
+    if (dioceseId === -1) return
+    console.log('valid', formData)
+
+    const data = {
+      name: formData.name,
+      address: formData.address,
+      dioceseId: dioceseId
+    }
+
+    getApiResponse('/parishes', Methods.POST, data).then((res) => {
       if (!res.isSuccess)
         return enqueueSnackbar('Coś poszło nie tak', {
           autoHideDuration: 3000,
@@ -29,7 +63,7 @@ export default function AddParish() {
           variant: 'error',
         })
 
-      enqueueSnackbar('Diecezja została dodana', {
+      enqueueSnackbar('Parafia została dodana', {
         autoHideDuration: 3000,
         preventDuplicate: true,
         variant: 'success',
@@ -39,45 +73,60 @@ export default function AddParish() {
     })
   }
 
+  const [dioceseId, setDioceseId] = useState(-1)
+
+  const { getApiResponse } = useApi()
+
+  const { enqueueSnackbar } = useSnackbar()
+
+  const navigate = useNavigate()
+
   return (
     <>
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
         <Typography variant='h4'>Dodaj parafię</Typography>
 
-        <TextField
-          label={'Nazwa parafii'}
-          required
-          onChange={(e) => setParish({ ...parish, name: e.target.value })}
-        />
+        <Box
+          component='form'
+          onSubmit={handleSubmit(onValid)}
+          sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
+        >
+          <TextField
+            label={'Nazwa parafii'}
+            id='name'
+            {...inputProps('name')}
+          />
 
-        <TextField
-          label={'Adres parafii'}
-          required
-          onChange={(e) => setParish({ ...parish, address: e.target.value })}
-        />
+          <TextField
+            label={'Adres parafii'}
+            id='address'
+            {...inputProps('address')}
+          />
 
-        <DiocesesAutocomplete
-          value={diocesesOptions.find((c) => c.value === parish.dioceseId) ?? null}
-          onChange={(_, e) => {
-            setParish((prev) => ({ ...prev, dioceseId: e?.value ?? -1 }))
-          }}
-        />
+          <DiocesesAutocomplete
+            value={diocesesOptions.find((c) => c.value === dioceseId) ?? null}
+            onChange={(_, e) => {
+              setDioceseId(e?.value ?? -1)
+            }}
+            error={dioceseId === -1 && checked}
+          />
 
-        <Stack direction='row' justifyContent='space-between'>
-          <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
-            Powrót
-          </LoadingButton>
+          <Stack direction='row' justifyContent='space-between'>
+            <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
+              Powrót
+            </LoadingButton>
 
-          <LoadingButton
-            color='success'
-            disabled={!parish?.name || !parish?.address || parish.dioceseId === -1}
-            variant='contained'
-            onClick={handleAddParish}
-            sx={{ width: 150, alignSelf: 'end' }}
-          >
-            Dodaj
-          </LoadingButton>
-        </Stack>
+            <LoadingButton
+              color='success'
+              variant='contained'
+              type='submit'
+              onClick={() => setChecked(true)}
+              sx={{ width: 150, alignSelf: 'end' }}
+            >
+              Dodaj
+            </LoadingButton>
+          </Stack>
+        </Box>
       </Grid>
     </>
   )

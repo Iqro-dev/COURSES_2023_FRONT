@@ -63,6 +63,7 @@ export default function AddInstructor() {
   }
 
   const onValid: SubmitHandler<any> = (formData) => {
+    if (selectedParishes.length === 0) return
     console.log('valid', formData)
 
     const data: InstructorPost = {

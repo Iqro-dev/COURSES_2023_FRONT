@@ -103,7 +103,7 @@ export default function ParishDetails() {
             Powrót
           </Button>
 
-          <Button onClick={handleEdit} variant='contained' color='success'>
+          <Button onClick={handleEdit} disabled={!parishDetails.name || !parishDetails.address || parishDetails.dioceseId === -1} variant='contained' color='success'>
             Zapisz
           </Button>
         </Stack>
