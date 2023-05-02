@@ -6,7 +6,7 @@ import { Parish } from '../../types/parish/parish'
 export function useParishes() {
   const { getApiResponse } = useApi()
 
-  const [parishes, setParishes] = useState<Parish[]>()
+  const [parishes, setParishes] = useState<Parish[]>([])
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {

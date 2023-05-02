@@ -1,11 +1,7 @@
 import { Autocomplete, AutocompleteProps, TextField } from '@mui/material'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { useEffect } from 'react'
-
-export type Option = {
-  value: number | undefined
-  label: string
-}
+import { Option } from '../../types/option'
 
 export let diocesesOptions: Option[] = []
 

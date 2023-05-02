@@ -1,4 +1,4 @@
-import { Box, FormControl, FormHelperText, Grid, InputLabel, MenuItem, OutlinedInput, Select, Stack, TextField, Typography } from '@mui/material'
+import { Box, Grid, Stack, TextField, Typography } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { useValidationResolver } from '../../hooks/forms/use-validate'
 import * as Yup from 'yup'
@@ -10,10 +10,11 @@ import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useSnackbar } from 'notistack'
 import { useNavigate } from 'react-router-dom'
+import { ParishesAutocomplete, parishesOptions } from '../../components/inputs/parishes-autocomplete'
 
 export default function AddInstructor() {
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email().required('E-mail jest wymagany'),
+    email: Yup.string().email('E-mail musi być poprawny').required('E-mail jest wymagany'),
     password: Yup.string().required('Hasło jest wymagane').min(4, 'Hasło musi mieć przynajmniej 4 znaki'),
     repeatPassword: Yup.string()
       .required('Hasło jest wymagane')
@@ -23,10 +24,11 @@ export default function AddInstructor() {
     lastName: Yup.string().required('Nazwisko jest wymagane'),
     description: Yup.string().required('Opis jest wymagany'),
     qualifications: Yup.string().required('Kwalifikacje są wymagane'),
-    parishesIds: Yup.array().of(Yup.number()).min(1, 'Przynajmniej jedna parafia jest wymagana'),
   })
 
   const resolver = useValidationResolver(validationSchema)
+
+  const [checked, setChecked] = useState(false)
 
   const [selectedParishes, setSelectedParishes] = useState<number[]>([])
 
@@ -73,7 +75,7 @@ export default function AddInstructor() {
         lastName: formData.lastName,
         description: formData.description,
         qualifications: formData.qualifications,
-        parishesIds: formData.parishesIds,
+        parishesIds: selectedParishes,
       },
     }
 
@@ -129,29 +131,15 @@ export default function AddInstructor() {
 
           <TextField label={'Kwalifikacje'} id='qualifications' {...inputProps('qualifications')} />
 
-          <FormControl {...inputProps('parishesIds')}>
-            <InputLabel>Parafie</InputLabel>
-
-            <Select
-              id="parishesIds"
-              multiple
-              {...inputProps('parishesIds')}
-              value={selectedParishes}
-              onChange={(e) => setSelectedParishes(e.target.value as number[])}
-              input={<OutlinedInput label="Name" />}
-            >
-              {parishes?.map((parish) => (
-                <MenuItem
-                  key={parish.id}
-                  value={parish.id}
-                >
-                  {parish.name}
-                </MenuItem>
-              ))}
-            </Select>
-
-            <FormHelperText>{inputProps('parishesIds').helperText}</FormHelperText>
-          </FormControl>
+          <ParishesAutocomplete
+            multiple
+            value={parishesOptions.filter((c) => selectedParishes.includes(c.value ?? -1)) ?? null}
+            onChange={(_, e) => {
+              const ids = e?.map((c) => c.value ?? -1) ?? []
+              setSelectedParishes([...ids])
+            }}
+            error={selectedParishes.length === 0 && checked}
+          />
 
           <Stack direction='row' justifyContent='space-between'>
             <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
@@ -162,6 +150,7 @@ export default function AddInstructor() {
               color='success'
               variant='contained'
               type='submit'
+              onClick={() => setChecked(true)}
               sx={{ width: 150, alignSelf: 'end' }}
             >
               Dodaj
