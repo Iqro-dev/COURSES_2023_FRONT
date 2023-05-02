@@ -21,11 +21,13 @@ export function ParishesAutocomplete(
     parishesOptions = parishes.map((parish) => ({ value: parish.id, label: parish.name }))
   }, [parishes])
 
+  const { error, ...rest } = props
+
   return (
-    <FormControl error={props.error}>
+    <FormControl error={error}>
       <Autocomplete
-        {...props}
-        renderInput={(params) => <TextField error={props.error} {...params} label='Parafie' variant='outlined' />}
+        {...rest}
+        renderInput={(params) => <TextField error={error} {...params} label='Parafie' variant='outlined' />}
         renderOption={(props, option) => {
           return (
             <li {...props} key={option.value}>
@@ -35,7 +37,7 @@ export function ParishesAutocomplete(
         }}
         options={parishesOptions}
       />
-      <FormHelperText>{props.error && 'Proszę wybrać parafię'}</FormHelperText>
+      <FormHelperText>{error && 'Proszę wybrać parafię'}</FormHelperText>
     </FormControl>
   )
 }
