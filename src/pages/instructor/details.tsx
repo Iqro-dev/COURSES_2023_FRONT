@@ -1,4 +1,4 @@
-import { Button, FormControl, Grid, InputLabel, MenuItem, OutlinedInput, Select, Stack, Typography } from '@mui/material'
+import { Button, Grid, Stack, Typography } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { InputText } from '../../components/inputs/text'
 import { useState, useEffect } from 'react'
@@ -8,7 +8,7 @@ import { Methods } from '../../types/fetch-methods'
 import { useUser } from '../../hooks/users/use-user'
 import { User } from '../../types/user'
 import Roles from '../../types/roles'
-import { useParishes } from '../../hooks/parish/use-parishes'
+import { ParishesAutocomplete, parishesOptions } from '../../components/inputs/parishes-autocomplete'
 
 export default function InstructorDetails() {
   const [params] = useSearchParams()
@@ -36,8 +36,6 @@ export default function InstructorDetails() {
   const { getApiResponse } = useApi()
 
   const { enqueueSnackbar } = useSnackbar()
-
-  const { parishes } = useParishes()
 
   const navigate = useNavigate()
 
@@ -153,31 +151,21 @@ export default function InstructorDetails() {
             }
           />
 
-          <FormControl>
-            <InputLabel>Parafie</InputLabel>
-
-            <Select
-              multiple
-              value={instructorDetails?.instructor?.parishesIds ?? []}
-              onChange={(e) => setInstructorDetails({
+          <ParishesAutocomplete
+            multiple
+            value={parishesOptions.filter((c) => instructorDetails.instructor.parishesIds?.includes(c.value ?? -1)) ?? null}
+            onChange={(_, e) => {
+              const ids = e?.map((c) => c.value ?? -1) ?? []
+              setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
                   ...instructorDetails.instructor,
-                  parishesIds: e.target.value as number[],
+                  parishesIds: ids as number[],
                 },
-              })}
-              input={<OutlinedInput label="Name" />}
-            >
-              {parishes?.map((parish) => (
-                <MenuItem
-                  key={parish.id}
-                  value={parish.id}
-                >
-                  {parish.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              })
+            }}
+            error={instructorDetails.instructor.parishesIds?.length === 0}
+          />
         </Stack>
 
         <Stack direction='row' justifyContent='space-between'>
@@ -185,7 +173,7 @@ export default function InstructorDetails() {
             Powrót
           </Button>
 
-          <Button onClick={handleEdit} variant='contained' color='success'>
+          <Button onClick={handleEdit} disabled={instructorDetails.instructor.parishesIds?.length === 0 || instructorDetails?.instructor?.qualifications === '' || instructorDetails?.instructor?.description === '' || instructorDetails?.instructor?.lastName === '' || instructorDetails?.instructor?.firstName === '' || instructorDetails?.email === ''} variant='contained' color='success'>
             Zapisz
           </Button>
         </Stack>
