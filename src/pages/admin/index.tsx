@@ -1,6 +1,7 @@
 import { Grid, Typography, Box } from '@mui/material'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { GridColDef } from '@mui/x-data-grid'
 import { useAdmins } from '../../hooks/admin/use-admins'
+import { CustomDataGrid } from '../../components/data-grid'
 
 export default function AdminsList() {
   const { admins } = useAdmins()
@@ -42,7 +43,7 @@ export default function AdminsList() {
         <Typography variant='h4'>Administratorzy</Typography>
 
         <Box sx={{ height: 500, width: '100%' }}>
-          <DataGrid
+          <CustomDataGrid
             rows={
               admins?.map((u, idx) => ({
                 ...u,

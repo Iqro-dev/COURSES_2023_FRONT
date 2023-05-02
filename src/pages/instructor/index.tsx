@@ -1,5 +1,5 @@
 import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useInstructors } from '../../hooks/instructor/use-instructors'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Methods } from '../../types/fetch-methods'
 import { useApi } from '../../hooks/use-api'
 import { useSnackbar } from 'notistack'
+import { CustomDataGrid } from '../../components/data-grid'
 
 export default function InstructorsList() {
   const { instructors, reload } = useInstructors()
@@ -63,7 +64,7 @@ export default function InstructorsList() {
       flex: 1,
     },
     {
-      field: 'actions',
+      field: 'Akcje',
       type: 'actions',
       getActions: (params: { id: any }) => [
         <GridActionsCellItem
@@ -125,7 +126,7 @@ export default function InstructorsList() {
         </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>
-          <DataGrid
+          <CustomDataGrid
             rows={
               instructors?.map((u, idx) => ({
                 ...u,
