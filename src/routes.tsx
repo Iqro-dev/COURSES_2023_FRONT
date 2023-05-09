@@ -46,7 +46,7 @@ export function RoutesTree() {
         >
           <Route index element={<Home />} />
 
-          <Route path='administrators'>
+          <Route path='admin'>
             <Route index element={<AdminsList />} />
 
             <Route path='add' element={<AddAdmin />} />
@@ -54,7 +54,7 @@ export function RoutesTree() {
             <Route path='details' element={<AdminDetails />} />
           </Route>
 
-          <Route path='instructors'>
+          <Route path='instructor'>
             <Route index element={<InstructorsList />} />
 
             <Route path='details' element={<InstructorDetails />} />

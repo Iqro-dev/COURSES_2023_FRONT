@@ -70,7 +70,7 @@ export default function InstructorsList() {
         <GridActionsCellItem
           label={''}
           icon={<Edit />}
-          onClick={() => navigate(`/dashboard/instructors/details?id=${params.id}`)}
+          onClick={() => navigate(`/dashboard/instructor/details?id=${params.id}`)}
         />,
         <GridActionsCellItem
           label={''}

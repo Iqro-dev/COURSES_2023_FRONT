@@ -21,13 +21,13 @@ export function SidebarItems() {
   const links: Link[] = [
     {
       name: 'Administratorzy',
-      path: '/dashboard/administrators',
+      path: '/dashboard/admin',
       icon: <AdminPanelSettings />,
       privilegedRoles: ['superadmin', 'admin'],
     },
     {
       name: 'Prowadzący',
-      path: '/dashboard/instructors',
+      path: '/dashboard/instructor',
       icon: <CoPresent />,
       privilegedRoles: ['superadmin', 'admin'],
     },
@@ -35,13 +35,13 @@ export function SidebarItems() {
       name: 'Diecezje',
       path: '/dashboard/dioceses',
       icon: <SynagogueOutlined />,
-      privilegedRoles: ['superadmin', 'admin', 'lecturer'],
+      privilegedRoles: ['superadmin', 'admin', 'instructor'],
     },
     {
       name: 'Parafie',
       path: '/dashboard/parishes',
       icon: <Church />,
-      privilegedRoles: ['superadmin', 'admin', 'lecturer'],
+      privilegedRoles: ['superadmin', 'admin', 'instructor'],
     },
     {
       name: 'Ustawienia',

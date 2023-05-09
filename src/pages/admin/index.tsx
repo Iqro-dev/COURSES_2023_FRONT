@@ -70,7 +70,7 @@ export default function AdminsList() {
         <GridActionsCellItem
           label={''}
           icon={<Edit />}
-          onClick={() => navigate(`/dashboard/administrators/details?id=${params.id}`)}
+          onClick={() => navigate(`/dashboard/admin/details?id=${params.id}`)}
         />,
         <GridActionsCellItem
           label={''}
