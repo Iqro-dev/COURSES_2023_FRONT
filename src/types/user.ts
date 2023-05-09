@@ -9,7 +9,7 @@ type User = {
   status?: boolean
   lastLoginDate?: Date
   admin?: Admin
-  instructor: Instructor
+  instructor?: Instructor
 }
 
 export type { User }

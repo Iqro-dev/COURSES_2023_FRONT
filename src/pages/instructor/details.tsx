@@ -40,7 +40,7 @@ export default function InstructorDetails() {
   const navigate = useNavigate()
 
   const handleEdit = () => {
-    delete instructorDetails.instructor.parishes
+    delete instructorDetails.instructor?.parishes
     setInstructorDetails({
       ...instructorDetails,
       email: user?.email.trim() ?? '',
@@ -68,7 +68,7 @@ export default function InstructorDetails() {
     if (user) setInstructorDetails({
       ...user,
       instructor: {
-        ...user.instructor,
+        ...user.instructor!,
         parishesIds: user?.instructor?.parishes?.map((parish) => parish.id) ?? [],
       }
     })
@@ -102,7 +102,7 @@ export default function InstructorDetails() {
               setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
-                  ...instructorDetails.instructor,
+                  ...instructorDetails.instructor!,
                   firstName: e,
                 },
               })
@@ -116,7 +116,7 @@ export default function InstructorDetails() {
               setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
-                  ...instructorDetails.instructor,
+                  ...instructorDetails.instructor!,
                   lastName: e,
                 },
               })
@@ -130,7 +130,7 @@ export default function InstructorDetails() {
               setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
-                  ...instructorDetails.instructor,
+                  ...instructorDetails.instructor!,
                   description: e,
                 },
               })
@@ -144,7 +144,7 @@ export default function InstructorDetails() {
               setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
-                  ...instructorDetails.instructor,
+                  ...instructorDetails.instructor!,
                   qualifications: e,
                 },
               })
@@ -153,18 +153,18 @@ export default function InstructorDetails() {
 
           <ParishesAutocomplete
             multiple
-            value={parishesOptions.filter((c) => instructorDetails.instructor.parishesIds?.includes(c.value ?? -1)) ?? null}
+            value={parishesOptions.filter((c) => instructorDetails.instructor?.parishesIds?.includes(c.value ?? -1)) ?? null}
             onChange={(_, e) => {
               const ids = e?.map((c) => c.value ?? -1) ?? []
               setInstructorDetails({
                 ...instructorDetails,
                 instructor: {
-                  ...instructorDetails.instructor,
+                  ...instructorDetails.instructor!,
                   parishesIds: ids as number[],
                 },
               })
             }}
-            error={instructorDetails.instructor.parishesIds?.length === 0}
+            error={instructorDetails.instructor?.parishesIds?.length === 0}
           />
         </Stack>
 
@@ -173,7 +173,7 @@ export default function InstructorDetails() {
             Powrót
           </Button>
 
-          <Button onClick={handleEdit} disabled={instructorDetails.instructor.parishesIds?.length === 0 || !instructorDetails?.instructor?.qualifications || !instructorDetails?.instructor?.description || !instructorDetails?.instructor?.lastName || !instructorDetails?.instructor?.firstName || !instructorDetails?.email} variant='contained' color='success'>
+          <Button onClick={handleEdit} disabled={instructorDetails.instructor?.parishesIds?.length === 0 || !instructorDetails?.instructor?.qualifications || !instructorDetails?.instructor?.description || !instructorDetails?.instructor?.lastName || !instructorDetails?.instructor?.firstName || !instructorDetails?.email} variant='contained' color='success'>
             Zapisz
           </Button>
         </Stack>

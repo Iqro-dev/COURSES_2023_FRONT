@@ -1,5 +1,5 @@
 type Admin = {
-  id: number
+  id?: number
   firstName: string
   lastName: string
   phoneNumber?: string
