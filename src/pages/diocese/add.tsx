@@ -41,7 +41,7 @@ export default function AddDiocese() {
     console.log('valid', formData)
 
     const data = {
-      name: formData.name
+      name: formData.name,
     }
 
     getApiResponse('/dioceses', Methods.POST, data).then((res) => {
@@ -78,11 +78,7 @@ export default function AddDiocese() {
           onSubmit={handleSubmit(onValid)}
           sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
         >
-          <TextField
-            label={'Nazwa diecezji'}
-            id='name'
-            {...inputProps('name')}
-          />
+          <TextField label={'Nazwa diecezji'} id='name' {...inputProps('name')} />
 
           <Stack direction='row' justifyContent='space-between'>
             <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
@@ -95,7 +91,7 @@ export default function AddDiocese() {
               type='submit'
               sx={{ width: 150, alignSelf: 'end' }}
             >
-              Dodaj
+              Zapisz
             </LoadingButton>
           </Stack>
         </Box>

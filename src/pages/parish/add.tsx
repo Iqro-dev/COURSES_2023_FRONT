@@ -52,7 +52,7 @@ export default function AddParish() {
     const data = {
       name: formData.name,
       address: formData.address,
-      dioceseId: dioceseId
+      dioceseId: dioceseId,
     }
 
     getApiResponse('/parishes', Methods.POST, data).then((res) => {
@@ -91,17 +91,9 @@ export default function AddParish() {
           onSubmit={handleSubmit(onValid)}
           sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2 }}
         >
-          <TextField
-            label={'Nazwa parafii'}
-            id='name'
-            {...inputProps('name')}
-          />
+          <TextField label={'Nazwa parafii'} id='name' {...inputProps('name')} />
 
-          <TextField
-            label={'Adres parafii'}
-            id='address'
-            {...inputProps('address')}
-          />
+          <TextField label={'Adres parafii'} id='address' {...inputProps('address')} />
 
           <DiocesesAutocomplete
             value={diocesesOptions.find((c) => c.value === dioceseId) ?? null}
@@ -123,7 +115,7 @@ export default function AddParish() {
               onClick={() => setChecked(true)}
               sx={{ width: 150, alignSelf: 'end' }}
             >
-              Dodaj
+              Zapisz
             </LoadingButton>
           </Stack>
         </Box>

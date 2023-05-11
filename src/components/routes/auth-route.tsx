@@ -10,7 +10,8 @@ export function AuthRoute({ children }: PropsWithChildren): ReactElement {
   } = useContext(AuthContext)
 
   useEffect(() => {
-    if (!loginStatus) {
+    console.log('loginStatus', loginStatus)
+    if (!loginStatus && typeof loginStatus !== 'undefined') {
       navigate('/')
     }
   }, [location.pathname, loginStatus])

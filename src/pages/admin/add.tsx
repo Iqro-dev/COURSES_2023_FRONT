@@ -12,7 +12,9 @@ import { AdminPost } from '../../types/admin/admin-post'
 export default function AddAdmin() {
   const validationSchema = Yup.object().shape({
     email: Yup.string().email('E-mail musi być poprawny').required('E-mail jest wymagany'),
-    password: Yup.string().required('Hasło jest wymagane').min(4, 'Hasło musi mieć przynajmniej 4 znaki'),
+    password: Yup.string()
+      .required('Hasło jest wymagane')
+      .min(4, 'Hasło musi mieć przynajmniej 4 znaki'),
     repeatPassword: Yup.string()
       .required('Hasło jest wymagane')
       .oneOf([Yup.ref('password'), ''], 'Hasła muszą być takie same')
@@ -67,11 +69,12 @@ export default function AddAdmin() {
 
     getApiResponse('/users', Methods.POST, data).then((res) => {
       console.log(res)
-      if (!res.isSuccess) return enqueueSnackbar('Coś poszło nie tak', {
-        autoHideDuration: 3000,
-        preventDuplicate: true,
-        variant: 'error',
-      })
+      if (!res.isSuccess)
+        return enqueueSnackbar('Coś poszło nie tak', {
+          autoHideDuration: 3000,
+          preventDuplicate: true,
+          variant: 'error',
+        })
 
       enqueueSnackbar('Zapisano', {
         autoHideDuration: 3000,
@@ -120,7 +123,7 @@ export default function AddAdmin() {
               type='submit'
               sx={{ width: 150, alignSelf: 'end' }}
             >
-              Dodaj
+              Zapisz
             </LoadingButton>
           </Stack>
         </Box>
