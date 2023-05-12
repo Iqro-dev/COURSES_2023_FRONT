@@ -83,7 +83,7 @@ export default function ParishesList() {
   return (
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
-        <DialogTitle>Czy na pewno chcesz usunąć tą diecezję?</DialogTitle>
+        <DialogTitle>Czy na pewno chcesz usunąć tą parafię?</DialogTitle>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
