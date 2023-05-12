@@ -3,6 +3,7 @@ import {
   Button,
   Grid,
   IconButton,
+  ImageList,
   ImageListItem,
   ImageListItemBar,
   Stack,
@@ -30,7 +31,7 @@ import { useInstructorsFiles } from '../../hooks/instructor/use-instructor-files
 
 export default function InstructorDetails() {
   const [avatar, setAvatar] = useState<ImageObject>({})
-  // const [qualifications, setQualifications] = useState<ImageObject[]>([])
+  const [qualificationsImages, setQualificationsImages] = useState<ImageObject[]>([])
   // const [otherImages, setOtherImages] = useState<ImageObject[]>([])
 
   const [params] = useSearchParams()
@@ -38,7 +39,11 @@ export default function InstructorDetails() {
 
   const { user } = useContext(AuthContext)
 
-  const { avatar: avatarImage, loaded: loadedFiles } = useInstructorsFiles(parseInt(id ?? ''))
+  const {
+    qualificationsImages: qualImages,
+    avatar: avatarImage,
+    loaded: loadedFiles,
+  } = useInstructorsFiles(parseInt(id ?? ''))
 
   const { user: instructor, loaded } = useUser(parseInt(id ?? ''))
 
@@ -68,11 +73,14 @@ export default function InstructorDetails() {
       console.log(e.target.files[0])
       if (type === 'profile_image')
         setAvatar({ objectUrl: URL.createObjectURL(e.target.files[0]), file: e.target.files[0] })
-      // else if (type === 'qualification_image')
-      //   setQualifications([
-      //     ...qualifications,
-      //     { objectUrl: URL.createObjectURL(e.target.files[0]), file: e.target.files[0] },
-      //   ])
+      else if (type === 'qualification_image') {
+        const qual: ImageObject[] = Array.from(e.target.files).map((file) => ({
+          objectUrl: URL.createObjectURL(file),
+          file,
+        }))
+
+        setQualificationsImages(qual)
+      }
       // else if (type === 'other_image')
       //   setOtherImages([
       //     ...otherImages,
@@ -156,10 +164,11 @@ export default function InstructorDetails() {
 
   useEffect(() => {
     setAvatar(avatarImage)
+    setQualificationsImages(qualImages)
   }, [loadedFiles])
 
   useEffect(() => {
-    console.log(avatar)
+    console.log('avatar', avatar)
   }, [avatar])
 
   const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -262,9 +271,71 @@ export default function InstructorDetails() {
         </Stack>
 
         {user.role === 'instructor' && (
-          <Grid container direction='row' justifyContent={'end'} gap={2} sx={{ padding: 2 }}>
+          <Grid
+            container
+            direction='row'
+            justifyContent={'space-between'}
+            gap={2}
+            sx={{ padding: 2 }}
+          >
+            <Stack gap={1}>
+              <Stack direction='row' gap={2} alignItems={'center'}>
+                <Typography variant='h5'>Załączniki do kwalifikacji:</Typography>
+
+                <LoadingButton variant='contained' color='success' component='label'>
+                  Dodaj
+                  <input
+                    type='file'
+                    hidden
+                    multiple
+                    onChange={(e) => setFileInput(e, 'qualification_image')}
+                    onClick={onInputClick}
+                    value={undefined}
+                  />
+                </LoadingButton>
+              </Stack>
+
+              {qualificationsImages.length > 0 && (
+                <>
+                  <ImageList sx={{ width: 500, minHeight: 150 }} cols={3} rowHeight={164}>
+                    {qualificationsImages.map(({ file, objectUrl }, idx) => {
+                      return (
+                        <ImageListItem key={idx}>
+                          <Image
+                            src={objectUrl ?? ''}
+                            alt={file?.name}
+                            height='164px'
+                            duration={500}
+                          />
+                          <ImageListItemBar
+                            title={file?.name}
+                            actionIcon={
+                              <Stack direction='row'>
+                                <IconButton
+                                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                  aria-label={`remove file ${file?.name}`}
+                                  onClick={() =>
+                                    setQualificationsImages(
+                                      qualificationsImages.filter((_, index) => index !== idx),
+                                    )
+                                  }
+                                >
+                                  <Clear />
+                                </IconButton>
+                              </Stack>
+                            }
+                          />
+                        </ImageListItem>
+                      )
+                    })}
+                  </ImageList>
+                </>
+              )}
+            </Stack>
+
             <Stack gap={1}>
               <Typography variant='h5'>Zdjęcie profilowe</Typography>
+
               <ImageListItem>
                 <Box sx={{ border: 0.1 }}>
                   <Image

@@ -133,6 +133,10 @@ export default function SettingsPage() {
     setHeader(headerImage)
   }, [loadedImages])
 
+  useEffect(() => {
+    console.log(headerImage)
+  }, [headerImage])
+
   return (
     <>
       <Grid container direction='column' sx={{ padding: 2, gap: 4 }}>
