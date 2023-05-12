@@ -3,73 +3,66 @@ import { useApi } from '../use-api'
 import { Methods } from '../../types/fetch-methods'
 import { ImageObject } from '../../types/settings/image-object'
 
+export interface InstructorFiles {
+  profile_image: any[]
+  qualification_image: any[]
+  other_image: any[]
+}
+
 export function useInstructorsFiles(id: number) {
   const { getApiResponse } = useApi()
 
   const [avatar, setAvatar] = useState<ImageObject>({})
   const [qualificationsImages, setQualificationsImages] = useState<ImageObject[]>([])
-  // const [otherImages, setOtherImages] = useState<ImageObject[]>([])
+  const [otherImages, setOtherImages] = useState<ImageObject[]>([])
 
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {
-    const avatarPromise = getApiResponse<any>(
+    getApiResponse<InstructorFiles>(
       `/images/instructors?${new URLSearchParams({
         id: String(id),
-        type: 'profile_image',
       })}`,
       Methods.GET,
-    )
-    const qualificationsImagesPromise = getApiResponse<any[]>(
-      `/images/instructors?${new URLSearchParams({
-        id: String(id),
-        type: 'qualification_image',
-      })}`,
-      Methods.GET,
-    )
-    // const otherImagesPromise = getApiResponse<any>(`/images/instructors?id=${id}`, Methods.GET)
+    ).then((res) => {
+      if (res.isSuccess) {
+        const { profile_image, qualification_image, other_image } = res.data
 
-    Promise.allSettled([avatarPromise, qualificationsImagesPromise]).then(
-      ([avatar, qualifications]) => {
-        if (avatar.status === 'rejected')
-          return console.error('Błąd przy pobieraniu headera', avatar)
-        if (qualifications.status === 'rejected')
-          return console.error('Błąd przy pobieraniu logo', qualifications)
-        // if (other.status === 'rejected') return console.error('Błąd przy pobieraniu logo', other)
-
-        if (avatar.value.isSuccess) {
-          console.log(avatar.value)
-          const avatarFile = new File(
-            [avatar.value.data],
-            avatar.value.res.headers.get('content-disposition') ?? 'avatar.png',
-          )
-
-          const avatarUrl = URL.createObjectURL(avatarFile)
-
-          const _avatar = { objectUrl: avatarUrl, file: avatarFile }
-
-          setAvatar(_avatar)
-        }
-
-        if (qualifications.value.isSuccess) {
-          console.log(qualifications.value.data)
-          const qualificationImages = qualifications.value.data.map((image: any) => {
-            const file = new File(
-              [image],
-              image.res.headers.get('content-disposition') ?? 'qualification.png',
+        if (profile_image.length !== 0) {
+          profile_image.forEach((image) => {
+            getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
+              setAvatar({ objectUrl: URL.createObjectURL(res.data), file: res.data }),
             )
-
-            const imageUrl = URL.createObjectURL(file)
-
-            return { objectUrl: imageUrl, file: file }
           })
-
-          setQualificationsImages(qualificationImages)
         }
+
+        if (qualification_image.length !== 0)
+          [
+            qualification_image.forEach((image) => {
+              getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
+                setQualificationsImages((prev) => [
+                  ...prev,
+                  { objectUrl: URL.createObjectURL(res.data), file: res.data },
+                ]),
+              )
+            }),
+          ]
+
+        if (other_image.length !== 0)
+          [
+            other_image.forEach((image) => {
+              getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
+                setOtherImages((prev) => [
+                  ...prev,
+                  { objectUrl: URL.createObjectURL(res.data), file: res.data },
+                ]),
+              )
+            }),
+          ]
 
         setLoaded(true)
-      },
-    )
+      }
+    })
   }
 
   const reload = async () => {
@@ -79,5 +72,5 @@ export function useInstructorsFiles(id: number) {
 
   useEffect(load, [])
 
-  return { qualificationsImages, avatar, reload, loaded }
+  return { otherImages, qualificationsImages, avatar, reload, loaded }
 }

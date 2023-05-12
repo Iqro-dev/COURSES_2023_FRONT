@@ -23,16 +23,17 @@ import {
   parishesOptions,
 } from '../../components/inputs/parishes-autocomplete'
 import { LoadingButton } from '@mui/lab'
-import { Clear } from '@mui/icons-material'
+import { Clear, Download } from '@mui/icons-material'
 import { Image } from 'mui-image'
 import { ImageObject } from '../../types/settings/image-object'
 import { AuthContext } from '../../providers/auth-provider'
 import { useInstructorsFiles } from '../../hooks/instructor/use-instructor-files'
+import { saveAs } from 'file-saver'
 
 export default function InstructorDetails() {
   const [avatar, setAvatar] = useState<ImageObject>({})
   const [qualificationsImages, setQualificationsImages] = useState<ImageObject[]>([])
-  // const [otherImages, setOtherImages] = useState<ImageObject[]>([])
+  const [otherImages, setOtherImages] = useState<ImageObject[]>([])
 
   const [params] = useSearchParams()
   const id = params.get('id')
@@ -40,8 +41,9 @@ export default function InstructorDetails() {
   const { user } = useContext(AuthContext)
 
   const {
-    qualificationsImages: qualImages,
-    avatar: avatarImage,
+    otherImages: otherImagesFiles,
+    qualificationsImages: qualImagesFiles,
+    avatar: avatarImageFile,
     loaded: loadedFiles,
   } = useInstructorsFiles(parseInt(id ?? ''))
 
@@ -80,12 +82,14 @@ export default function InstructorDetails() {
         }))
 
         setQualificationsImages(qual)
+      } else if (type === 'other_image') {
+        const other: ImageObject[] = Array.from(e.target.files).map((file) => ({
+          objectUrl: URL.createObjectURL(file),
+          file,
+        }))
+
+        setOtherImages(other)
       }
-      // else if (type === 'other_image')
-      //   setOtherImages([
-      //     ...otherImages,
-      //     { objectUrl: URL.createObjectURL(e.target.files[0]), file: e.target.files[0] },
-      //   ])
     }
   }
 
@@ -163,8 +167,9 @@ export default function InstructorDetails() {
   }, [instructorDetails])
 
   useEffect(() => {
-    setAvatar(avatarImage)
-    setQualificationsImages(qualImages)
+    setAvatar(avatarImageFile)
+    setQualificationsImages(qualImagesFiles)
+    setOtherImages(otherImagesFiles)
   }, [loadedFiles])
 
   useEffect(() => {
@@ -314,10 +319,81 @@ export default function InstructorDetails() {
                                 <IconButton
                                   sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
                                   aria-label={`remove file ${file?.name}`}
+                                  onClick={() => {
+                                    saveAs(objectUrl ?? '', file?.name ?? 'qualification_image')
+                                  }}
+                                >
+                                  <Download />
+                                </IconButton>
+
+                                <IconButton
+                                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                  aria-label={`remove file ${file?.name}`}
                                   onClick={() =>
                                     setQualificationsImages(
                                       qualificationsImages.filter((_, index) => index !== idx),
                                     )
+                                  }
+                                >
+                                  <Clear />
+                                </IconButton>
+                              </Stack>
+                            }
+                          />
+                        </ImageListItem>
+                      )
+                    })}
+                  </ImageList>
+                </>
+              )}
+
+              <Stack direction='row' gap={2} alignItems={'center'}>
+                <Typography variant='h5'>Pozostałe załączniki:</Typography>
+
+                <LoadingButton variant='contained' color='success' component='label'>
+                  Dodaj
+                  <input
+                    type='file'
+                    hidden
+                    multiple
+                    onChange={(e) => setFileInput(e, 'other_image')}
+                    onClick={onInputClick}
+                    value={undefined}
+                  />
+                </LoadingButton>
+              </Stack>
+
+              {otherImages.length > 0 && (
+                <>
+                  <ImageList sx={{ width: 500, minHeight: 150 }} cols={3} rowHeight={164}>
+                    {otherImages.map(({ file, objectUrl }, idx) => {
+                      return (
+                        <ImageListItem key={idx}>
+                          <Image
+                            src={objectUrl ?? ''}
+                            alt={file?.name}
+                            height='164px'
+                            duration={500}
+                          />
+                          <ImageListItemBar
+                            title={file?.name}
+                            actionIcon={
+                              <Stack direction='row'>
+                                <IconButton
+                                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                  aria-label={`remove file ${file?.name}`}
+                                  onClick={() => {
+                                    saveAs(objectUrl ?? '', file?.name ?? 'other_image')
+                                  }}
+                                >
+                                  <Download />
+                                </IconButton>
+
+                                <IconButton
+                                  sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                                  aria-label={`remove file ${file?.name}`}
+                                  onClick={() =>
+                                    setOtherImages(otherImages.filter((_, index) => index !== idx))
                                   }
                                 >
                                   <Clear />
