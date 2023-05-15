@@ -35,6 +35,8 @@ export default function InstructorDetails() {
   const [qualificationsImages, setQualificationsImages] = useState<ImageObject[]>([])
   const [otherImages, setOtherImages] = useState<ImageObject[]>([])
 
+  const [deletedImages, setDeletedImages] = useState<string[]>([])
+
   const [params] = useSearchParams()
   const id = params.get('id')
 
@@ -120,6 +122,10 @@ export default function InstructorDetails() {
     const dataPromise = getApiResponse('/users', Methods.PUT, instructorDetails)
 
     if (user.role === 'instructor') {
+      if (deletedImages.length > 0)
+        deletedImages.map((image) => {
+          imagePromises.push(getApiResponse(`/${image}`, Methods.DELETE))
+        })
       if (avatar.file)
         imagePromises.push(
           getApiResponse(
@@ -135,7 +141,10 @@ export default function InstructorDetails() {
           getApiResponse(
             '/images/instructors',
             Methods.POST,
-            createFormData(qualificationsImages?.map((image) => image.file!), 'qualification_image'),
+            createFormData(
+              qualificationsImages?.map((image) => image.file!),
+              'qualification_image',
+            ),
             true,
           ),
         )
@@ -145,7 +154,10 @@ export default function InstructorDetails() {
           getApiResponse(
             '/images/instructors',
             Methods.POST,
-            createFormData(otherImages?.map((image) => image.file!), 'other_image'),
+            createFormData(
+              otherImages?.map((image) => image.file!),
+              'other_image',
+            ),
             true,
           ),
         )
@@ -196,7 +208,6 @@ export default function InstructorDetails() {
     setQualificationsImages(qualImagesFiles)
     setOtherImages(otherImagesFiles)
   }, [avatarImageFile, qualImagesFiles, otherImagesFiles])
-
 
   const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const element = event.target as HTMLInputElement
@@ -355,22 +366,8 @@ export default function InstructorDetails() {
                                     setQualificationsImages(
                                       qualificationsImages.filter((_, index) => index !== idx),
                                     )
-                                    getApiResponse(`/${image}`, Methods.DELETE).then((res) => {
-                                      if (res.isSuccess)
-                                        enqueueSnackbar('Usunięto załącznik', {
-                                          autoHideDuration: 3000,
-                                          preventDuplicate: true,
-                                          variant: 'warning',
-                                        })
-                                      else
-                                        enqueueSnackbar('Coś poszło nie tak', {
-                                          autoHideDuration: 3000,
-                                          preventDuplicate: true,
-                                          variant: 'error',
-                                        })
-                                    })
-                                  }
-                                  }
+                                    setDeletedImages([...deletedImages, image!])
+                                  }}
                                 >
                                   <Clear />
                                 </IconButton>
@@ -431,22 +428,8 @@ export default function InstructorDetails() {
                                   aria-label={`remove file ${file?.name}`}
                                   onClick={() => {
                                     setOtherImages(otherImages.filter((_, index) => index !== idx))
-                                    getApiResponse(`/${image}`, Methods.DELETE).then((res) => {
-                                      if (res.isSuccess)
-                                        enqueueSnackbar('Usunięto załącznik', {
-                                          autoHideDuration: 3000,
-                                          preventDuplicate: true,
-                                          variant: 'warning',
-                                        })
-                                      else
-                                        enqueueSnackbar('Coś poszło nie tak', {
-                                          autoHideDuration: 3000,
-                                          preventDuplicate: true,
-                                          variant: 'error',
-                                        })
-                                    })
-                                  }
-                                  }
+                                    setDeletedImages([...deletedImages, image!])
+                                  }}
                                 >
                                   <Clear />
                                 </IconButton>
@@ -484,20 +467,7 @@ export default function InstructorDetails() {
                             aria-label={`remove file ${avatar.file?.name}`}
                             onClick={() => {
                               setAvatar({ objectUrl: '', file: undefined })
-                              getApiResponse(`/${avatar.image}`, Methods.DELETE).then((res) => {
-                                if (res.isSuccess)
-                                  enqueueSnackbar('Usunięto załącznik', {
-                                    autoHideDuration: 3000,
-                                    preventDuplicate: true,
-                                    variant: 'warning',
-                                  })
-                                else
-                                  enqueueSnackbar('Coś poszło nie tak', {
-                                    autoHideDuration: 3000,
-                                    preventDuplicate: true,
-                                    variant: 'error',
-                                  })
-                              })
+                              setDeletedImages([...deletedImages, avatar.image!])
                             }}
                           >
                             <Clear />
