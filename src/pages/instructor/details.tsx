@@ -44,7 +44,6 @@ export default function InstructorDetails() {
     otherImages: otherImagesFiles,
     qualificationsImages: qualImagesFiles,
     avatar: avatarImageFile,
-    loaded: loadedFiles,
   } = useInstructorsFiles(parseInt(id ?? ''))
 
   const { user: instructor, loaded } = useUser(parseInt(id ?? ''))
@@ -81,23 +80,31 @@ export default function InstructorDetails() {
           file,
         }))
 
-        setQualificationsImages(qual)
+        setQualificationsImages([...qualificationsImages, ...qual])
       } else if (type === 'other_image') {
         const other: ImageObject[] = Array.from(e.target.files).map((file) => ({
           objectUrl: URL.createObjectURL(file),
           file,
         }))
 
-        setOtherImages(other)
+        setOtherImages([...otherImages, ...other])
       }
     }
   }
 
-  const createFormData = (img: File, type: string) => {
+  const createFormData = (img: File[] | File, type: string) => {
     const formData = new FormData()
 
     formData.append('image_type', type)
-    formData.append('file', img)
+
+    if (Array.isArray(img))
+      img.forEach((file) => {
+        formData.append(file.name, file)
+      })
+    else {
+      console.log(img)
+      formData.append(img.name, img)
+    }
 
     return formData
   }
@@ -112,15 +119,37 @@ export default function InstructorDetails() {
 
     const dataPromise = getApiResponse('/users', Methods.PUT, instructorDetails)
 
-    if (avatar.file)
-      imagePromises.push(
-        getApiResponse(
-          '/images/instructors',
-          Methods.POST,
-          createFormData(avatar.file, 'profile_image'),
-          true,
-        ),
-      )
+    if (user.role === 'instructor') {
+      if (avatar.file)
+        imagePromises.push(
+          getApiResponse(
+            '/images/instructors',
+            Methods.POST,
+            createFormData(avatar.file, 'profile_image'),
+            true,
+          ),
+        )
+
+      if (qualificationsImages.length > 0)
+        imagePromises.push(
+          getApiResponse(
+            '/images/instructors',
+            Methods.POST,
+            createFormData(qualificationsImages?.map((image) => image.file!), 'qualification_image'),
+            true,
+          ),
+        )
+
+      if (otherImages.length > 0)
+        imagePromises.push(
+          getApiResponse(
+            '/images/instructors',
+            Methods.POST,
+            createFormData(otherImages?.map((image) => image.file!), 'other_image'),
+            true,
+          ),
+        )
+    }
 
     Promise.all(
       [dataPromise, ...imagePromises].map(
@@ -163,18 +192,11 @@ export default function InstructorDetails() {
   }, [loaded, instructor])
 
   useEffect(() => {
-    console.log(instructorDetails)
-  }, [instructorDetails])
-
-  useEffect(() => {
     setAvatar(avatarImageFile)
     setQualificationsImages(qualImagesFiles)
     setOtherImages(otherImagesFiles)
-  }, [loadedFiles])
+  }, [avatarImageFile, qualImagesFiles, otherImagesFiles])
 
-  useEffect(() => {
-    console.log('avatar', avatar)
-  }, [avatar])
 
   const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const element = event.target as HTMLInputElement
@@ -303,7 +325,7 @@ export default function InstructorDetails() {
               {qualificationsImages.length > 0 && (
                 <>
                   <ImageList sx={{ width: 500, minHeight: 150 }} cols={3} rowHeight={164}>
-                    {qualificationsImages.map(({ file, objectUrl }, idx) => {
+                    {qualificationsImages.map(({ file, objectUrl, image }, idx) => {
                       return (
                         <ImageListItem key={idx}>
                           <Image
@@ -329,10 +351,25 @@ export default function InstructorDetails() {
                                 <IconButton
                                   sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
                                   aria-label={`remove file ${file?.name}`}
-                                  onClick={() =>
+                                  onClick={() => {
                                     setQualificationsImages(
                                       qualificationsImages.filter((_, index) => index !== idx),
                                     )
+                                    getApiResponse(`/${image}`, Methods.DELETE).then((res) => {
+                                      if (res.isSuccess)
+                                        enqueueSnackbar('Usunięto załącznik', {
+                                          autoHideDuration: 3000,
+                                          preventDuplicate: true,
+                                          variant: 'warning',
+                                        })
+                                      else
+                                        enqueueSnackbar('Coś poszło nie tak', {
+                                          autoHideDuration: 3000,
+                                          preventDuplicate: true,
+                                          variant: 'error',
+                                        })
+                                    })
+                                  }
                                   }
                                 >
                                   <Clear />
@@ -366,7 +403,7 @@ export default function InstructorDetails() {
               {otherImages.length > 0 && (
                 <>
                   <ImageList sx={{ width: 500, minHeight: 150 }} cols={3} rowHeight={164}>
-                    {otherImages.map(({ file, objectUrl }, idx) => {
+                    {otherImages.map(({ file, objectUrl, image }, idx) => {
                       return (
                         <ImageListItem key={idx}>
                           <Image
@@ -392,8 +429,23 @@ export default function InstructorDetails() {
                                 <IconButton
                                   sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
                                   aria-label={`remove file ${file?.name}`}
-                                  onClick={() =>
+                                  onClick={() => {
                                     setOtherImages(otherImages.filter((_, index) => index !== idx))
+                                    getApiResponse(`/${image}`, Methods.DELETE).then((res) => {
+                                      if (res.isSuccess)
+                                        enqueueSnackbar('Usunięto załącznik', {
+                                          autoHideDuration: 3000,
+                                          preventDuplicate: true,
+                                          variant: 'warning',
+                                        })
+                                      else
+                                        enqueueSnackbar('Coś poszło nie tak', {
+                                          autoHideDuration: 3000,
+                                          preventDuplicate: true,
+                                          variant: 'error',
+                                        })
+                                    })
+                                  }
                                   }
                                 >
                                   <Clear />
@@ -432,6 +484,20 @@ export default function InstructorDetails() {
                             aria-label={`remove file ${avatar.file?.name}`}
                             onClick={() => {
                               setAvatar({ objectUrl: '', file: undefined })
+                              getApiResponse(`/${avatar.image}`, Methods.DELETE).then((res) => {
+                                if (res.isSuccess)
+                                  enqueueSnackbar('Usunięto załącznik', {
+                                    autoHideDuration: 3000,
+                                    preventDuplicate: true,
+                                    variant: 'warning',
+                                  })
+                                else
+                                  enqueueSnackbar('Coś poszło nie tak', {
+                                    autoHideDuration: 3000,
+                                    preventDuplicate: true,
+                                    variant: 'error',
+                                  })
+                              })
                             }}
                           >
                             <Clear />

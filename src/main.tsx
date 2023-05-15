@@ -31,14 +31,14 @@ const theme = createTheme({
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <SnackbarProvider>
-      <ThemeProvider theme={theme}>
-        <AuthProvider>
-          <CssBaseline />
-          <RoutesTree />
-        </AuthProvider>
-      </ThemeProvider>
-    </SnackbarProvider>
-  </React.StrictMode>,
+
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <AuthProvider>
+        <CssBaseline />
+        <RoutesTree />
+      </AuthProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
+  ,
 )

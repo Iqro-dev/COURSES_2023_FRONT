@@ -28,37 +28,46 @@ export function useInstructorsFiles(id: number) {
       if (res.isSuccess) {
         const { profile_image, qualification_image, other_image } = res.data
 
+        console.log(res.data)
+
         if (profile_image.length !== 0) {
           profile_image.forEach((image) => {
-            getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
-              setAvatar({ objectUrl: URL.createObjectURL(res.data), file: res.data }),
+            getApiResponse<any>(`/${image}`, Methods.GET).then((res) => {
+              console.log(res.res.headers)
+              if (res.isSuccess)
+                setAvatar({
+                  objectUrl: URL.createObjectURL(new Blob([res.data])), file: new File([res.data], res.res.headers.get('content-disposition')), image: image,
+                })
+            }
             )
           })
         }
 
-        if (qualification_image.length !== 0)
-          [
-            qualification_image.forEach((image) => {
-              getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
+        if (qualification_image.length !== 0) {
+          qualification_image.forEach((image) => {
+            getApiResponse<any>(`/${image}`, Methods.GET).then((res) => {
+              if (res.isSuccess)
                 setQualificationsImages((prev) => [
                   ...prev,
-                  { objectUrl: URL.createObjectURL(res.data), file: res.data },
-                ]),
-              )
-            }),
-          ]
+                  { objectUrl: URL.createObjectURL(new Blob([res.data])), file: new File([res.data], res.res.headers.get('content-disposition')), image: image },
+                ])
+            }
+            )
+          })
+        }
 
-        if (other_image.length !== 0)
-          [
-            other_image.forEach((image) => {
-              getApiResponse<any>(`/${image}`, Methods.GET).then((res) =>
+        if (other_image.length !== 0) {
+          other_image.forEach((image) => {
+            getApiResponse<any>(`/${image}`, Methods.GET).then((res) => {
+              if (res.isSuccess)
                 setOtherImages((prev) => [
                   ...prev,
-                  { objectUrl: URL.createObjectURL(res.data), file: res.data },
-                ]),
-              )
-            }),
-          ]
+                  { objectUrl: URL.createObjectURL(new Blob([res.data])), file: new File([res.data], res.res.headers.get('content-disposition')), image: image },
+                ])
+            }
+            )
+          })
+        }
 
         setLoaded(true)
       }

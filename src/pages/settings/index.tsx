@@ -76,7 +76,7 @@ export default function SettingsPage() {
           true,
         ),
       )
-    else if (logo.delete)
+    else if (header.delete)
       imagePromises.push(getApiResponse('/settings/images?type=header_image', Methods.DELETE))
 
     if (logo.file)
