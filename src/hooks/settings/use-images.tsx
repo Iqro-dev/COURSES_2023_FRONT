@@ -22,7 +22,7 @@ export function useImages() {
       if (header.value.isSuccess) {
         const headerFile = new File(
           [header.value.data],
-          header.value.res.headers.get('content-disposition') ?? 'header.png',
+          'header',
         )
 
         const headerUrl = URL.createObjectURL(headerFile)
@@ -35,7 +35,7 @@ export function useImages() {
       if (logo.value.isSuccess) {
         const logoFile = new File(
           [logo.value.data],
-          logo.value.res.headers.get('content-disposition') ?? 'logo.png',
+          'logo',
         )
         const logoUrl = URL.createObjectURL(logoFile)
 
