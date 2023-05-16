@@ -36,7 +36,7 @@ export function useInstructorsFiles(id: number) {
               if (res.isSuccess)
                 setAvatar({
                   objectUrl: URL.createObjectURL(new Blob([res.data])),
-                  file: new File([res.data], res.res.headers.get('Content-Disposition')),
+                  file: new File([res.data], image.split('name=')[1]),
                   image: image,
                 })
             })
@@ -46,12 +46,13 @@ export function useInstructorsFiles(id: number) {
         if (qualification_image.length !== 0) {
           qualification_image.forEach((image) => {
             getApiResponse<any>(`/${image}`, Methods.GET).then((res) => {
+              console.log(res)
               if (res.isSuccess)
                 setQualificationsImages((prev) => [
                   ...prev,
                   {
                     objectUrl: URL.createObjectURL(new Blob([res.data])),
-                    file: new File([res.data], res.res.headers.get('Content-Disposition')),
+                    file: new File([res.data], image.split('name=')[1]),
                     image: image,
                   },
                 ])
@@ -67,7 +68,7 @@ export function useInstructorsFiles(id: number) {
                   ...prev,
                   {
                     objectUrl: URL.createObjectURL(new Blob([res.data])),
-                    file: new File([res.data], res.res.headers.get('Content-Disposition')),
+                    file: new File([res.data], image.split('name=')[1]),
                     image: image,
                   },
                 ])
