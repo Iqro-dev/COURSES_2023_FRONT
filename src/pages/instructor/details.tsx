@@ -173,7 +173,7 @@ export default function InstructorDetails() {
               Methods.POST,
               createFormData(
                 image.file!,
-                'qualification_image',
+                'other_image',
               ),
               true,
             ),
@@ -280,6 +280,8 @@ export default function InstructorDetails() {
 
           <InputText
             label='Opis'
+            multiline
+            rows={4}
             value={instructorDetails?.instructor?.description ?? ''}
             onChange={(e) =>
               setInstructorDetails({

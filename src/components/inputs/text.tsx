@@ -13,6 +13,8 @@ interface InputTextProps {
   value?: string
   InputProps?: TextFieldProps['InputProps']
   TextFieldProps?: TextFieldProps
+  multiline?: TextFieldProps['multiline']
+  rows?: TextFieldProps['rows']
 }
 
 export function InputText({
@@ -25,10 +27,14 @@ export function InputText({
   disabled,
   InputProps,
   TextFieldProps,
+  multiline,
+  rows,
 }: InputTextProps) {
   return (
     <>
       <TextField
+        multiline={multiline}
+        rows={rows}
         label={label}
         type={type ?? 'text'}
         disabled={disabled}

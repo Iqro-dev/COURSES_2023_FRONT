@@ -137,7 +137,7 @@ export default function AddInstructor() {
 
               <TextField label={'Nazwisko'} id='lastName' {...inputProps('lastName')} />
 
-              <TextField label={'Opis'} id='description' {...inputProps('description')} />
+              <TextField multiline rows={4} label={'Opis'} id='description' {...inputProps('description')} />
 
               <TextField
                 label={'Kwalifikacje'}
