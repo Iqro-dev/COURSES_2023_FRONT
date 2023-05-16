@@ -150,7 +150,10 @@ export default function DashboardLayout() {
               },
             }}
           >
-            <MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate(`/dashboard/${user.role === 'superadmin' ? 'admin' : user.role}/details?id=${user.id}`)
+              }}>
               <Avatar />
               Moje konto
             </MenuItem>

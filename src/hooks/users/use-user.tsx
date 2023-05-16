@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useApi } from '../use-api'
 import { Methods } from '../../types/fetch-methods'
-import { Parish } from '../../types/parish/parish'
+import { User } from '../../types/user'
 
-export function useParishes() {
+export function useUser(id: number) {
   const { getApiResponse } = useApi()
 
-  const [parishes, setParishes] = useState<Parish[]>([])
+  const [user, setUser] = useState<User>()
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {
-    getApiResponse<Parish[]>('/parishes/list', Methods.GET).then((res) => {
+    getApiResponse<User>(`/users?id=${id}`, Methods.GET).then((res) => {
       if (!res.isSuccess) return console.error(res)
 
-      const parishes = res.data
+      const user = res.data
 
-      console.log(parishes)
+      if (!user) return
 
-      if (!parishes) return
-
-      setParishes(parishes)
+      setUser(user)
       setLoaded(true)
     })
   }
@@ -31,5 +29,5 @@ export function useParishes() {
 
   useEffect(load, [])
 
-  return { parishes, reload, loaded }
+  return { user, reload, loaded }
 }

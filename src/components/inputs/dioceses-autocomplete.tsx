@@ -1,11 +1,7 @@
-import { Autocomplete, AutocompleteProps, TextField } from '@mui/material'
+import { Autocomplete, AutocompleteProps, FormControl, FormHelperText, TextField } from '@mui/material'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { useEffect } from 'react'
-
-export type Option = {
-  value: number | undefined
-  label: string
-}
+import { Option } from '../../types/option'
 
 export let diocesesOptions: Option[] = []
 
@@ -13,7 +9,7 @@ export function DiocesesAutocomplete(
   props: Omit<
     AutocompleteProps<Option, undefined, undefined, undefined, 'div'>,
     'options' | 'renderInput' | 'getOptionLabel' | 'loading'
-  >,
+  > & { error?: boolean },
 ) {
   const { dioceses } = useDioceses()
 
@@ -21,11 +17,17 @@ export function DiocesesAutocomplete(
     diocesesOptions = dioceses.map((diocese) => ({ value: diocese.id, label: diocese.name }))
   }, [dioceses])
 
+
+  const { error, ...rest } = props
+
   return (
-    <Autocomplete
-      {...props}
-      renderInput={(params) => <TextField {...params} label='Diecezja' variant='outlined' />}
-      options={diocesesOptions}
-    />
+    <FormControl error={error}>
+      <Autocomplete
+        {...rest}
+        renderInput={(params) => <TextField error={error} {...params} label='Diecezja' variant='outlined' />}
+        options={diocesesOptions}
+      />
+      <FormHelperText>{error && 'Proszę wybrać parafię'}</FormHelperText>
+    </FormControl>
   )
 }

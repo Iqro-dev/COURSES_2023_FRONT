@@ -15,6 +15,9 @@ import AddDiocese from './pages/diocese/add'
 import AddParish from './pages/parish/add'
 import AuthRoute from './components/routes/auth-route'
 import AddInstructor from './pages/instructor/add'
+import InstructorDetails from './pages/instructor/details'
+import AddAdmin from './pages/admin/add'
+import AdminDetails from './pages/admin/details'
 
 export function RoutesTree() {
   return (
@@ -43,10 +46,18 @@ export function RoutesTree() {
         >
           <Route index element={<Home />} />
 
-          <Route path='administrators' element={<AdminsList />} />
+          <Route path='admin'>
+            <Route index element={<AdminsList />} />
 
-          <Route path='instructors'>
+            <Route path='add' element={<AddAdmin />} />
+
+            <Route path='details' element={<AdminDetails />} />
+          </Route>
+
+          <Route path='instructor'>
             <Route index element={<InstructorsList />} />
+
+            <Route path='details' element={<InstructorDetails />} />
 
             <Route path='add' element={<AddInstructor />} />
           </Route>

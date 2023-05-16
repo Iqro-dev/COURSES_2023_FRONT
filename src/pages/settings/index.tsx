@@ -31,8 +31,6 @@ export default function SettingsPage() {
     { title: 'Dodaj logo', set: setLogo, value: logo, type: 'logo_image' },
   ]
 
-  const [formData] = useState(new FormData())
-
   const { getApiResponse } = useApi()
 
   const { enqueueSnackbar } = useSnackbar()
@@ -78,7 +76,7 @@ export default function SettingsPage() {
           true,
         ),
       )
-    else if (logo.delete)
+    else if (header.delete)
       imagePromises.push(getApiResponse('/settings/images?type=header_image', Methods.DELETE))
 
     if (logo.file)
@@ -92,8 +90,6 @@ export default function SettingsPage() {
       )
     else if (logo.delete)
       imagePromises.push(getApiResponse('/settings/images?type=logo_image', Methods.DELETE))
-
-    console.log(formData)
 
     console.log('promki', settingsPromise, ...imagePromises)
 
@@ -136,6 +132,10 @@ export default function SettingsPage() {
     setLogo(logoImage)
     setHeader(headerImage)
   }, [loadedImages])
+
+  useEffect(() => {
+    console.log(headerImage)
+  }, [headerImage])
 
   return (
     <>

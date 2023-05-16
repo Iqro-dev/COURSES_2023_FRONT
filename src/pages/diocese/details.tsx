@@ -115,7 +115,7 @@ export default function DioceseDetails() {
             Powrót
           </Button>
 
-          <Button onClick={handleEdit} variant='contained' color='success'>
+          <Button onClick={handleEdit} disabled={!dioceseDetails.name} variant='contained' color='success'>
             Zapisz
           </Button>
         </Stack>

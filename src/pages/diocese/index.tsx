@@ -1,5 +1,5 @@
 import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
+import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
@@ -7,6 +7,7 @@ import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { useSnackbar } from 'notistack'
 import { useState } from 'react'
+import { CustomDataGrid } from '../../components/data-grid'
 
 export default function DiocesesList() {
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -52,7 +53,7 @@ export default function DiocesesList() {
       flex: 1,
     },
     {
-      field: 'actions',
+      field: 'Akcje',
       type: 'actions',
       getActions: (params: { id: any }) => [
         <GridActionsCellItem
@@ -115,7 +116,7 @@ export default function DiocesesList() {
         </Box>
 
         <Box sx={{ height: 500, width: '100%' }}>
-          <DataGrid
+          <CustomDataGrid
             rows={
               dioceses?.map((u, idx) => ({
                 ...u,
