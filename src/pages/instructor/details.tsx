@@ -33,7 +33,11 @@ import { saveAs } from 'file-saver'
 export default function InstructorDetails() {
   const [avatar, setAvatar] = useState<ImageObject>({})
   const [qualificationsImages, setQualificationsImages] = useState<ImageObject[]>([])
+  const [newQualificationsImages, setNewQualificationsImages] = useState<ImageObject[]>([])
   const [otherImages, setOtherImages] = useState<ImageObject[]>([])
+  const [newOtherImages, setNewOtherImages] = useState<ImageObject[]>([])
+
+  const [newFile, setNewFile] = useState(false)
 
   const [deletedImages, setDeletedImages] = useState<string[]>([])
 
@@ -83,6 +87,11 @@ export default function InstructorDetails() {
         }))
 
         setQualificationsImages([...qualificationsImages, ...qual])
+
+        if (newFile) {
+          setNewQualificationsImages([...newQualificationsImages, ...qual])
+          setNewFile(false)
+        }
       } else if (type === 'other_image') {
         const other: ImageObject[] = Array.from(e.target.files).map((file) => ({
           objectUrl: URL.createObjectURL(file),
@@ -90,6 +99,10 @@ export default function InstructorDetails() {
         }))
 
         setOtherImages([...otherImages, ...other])
+        if (newFile) {
+          setNewOtherImages([...newOtherImages, ...other])
+          setNewFile(false)
+        }
       }
     }
   }
@@ -126,6 +139,7 @@ export default function InstructorDetails() {
         deletedImages.map((image) => {
           imagePromises.push(getApiResponse(`/${image}`, Methods.DELETE))
         })
+
       if (avatar.file)
         imagePromises.push(
           getApiResponse(
@@ -136,31 +150,35 @@ export default function InstructorDetails() {
           ),
         )
 
-      if (qualificationsImages.length > 0)
-        imagePromises.push(
-          getApiResponse(
-            '/images/instructors',
-            Methods.POST,
-            createFormData(
-              qualificationsImages?.map((image) => image.file!),
-              'qualification_image',
+      if (newQualificationsImages.length > 0)
+        newQualificationsImages?.map((image) => {
+          imagePromises.push(
+            getApiResponse(
+              '/images/instructors',
+              Methods.POST,
+              createFormData(
+                image.file!,
+                'qualification_image',
+              ),
+              true,
             ),
-            true,
-          ),
-        )
+          )
+        })
 
-      if (otherImages.length > 0)
-        imagePromises.push(
-          getApiResponse(
-            '/images/instructors',
-            Methods.POST,
-            createFormData(
-              otherImages?.map((image) => image.file!),
-              'other_image',
+      if (newOtherImages.length > 0)
+        newOtherImages?.map((image) => {
+          imagePromises.push(
+            getApiResponse(
+              '/images/instructors',
+              Methods.POST,
+              createFormData(
+                image.file!,
+                'qualification_image',
+              ),
+              true,
             ),
-            true,
-          ),
-        )
+          )
+        })
     }
 
     Promise.all(
@@ -212,6 +230,7 @@ export default function InstructorDetails() {
   const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const element = event.target as HTMLInputElement
     element.value = ''
+    setNewFile(true)
   }
 
   return (
