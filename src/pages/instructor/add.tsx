@@ -104,7 +104,7 @@ export default function AddInstructor() {
   }
 
   useEffect(() => {
-    console.log(parishes)
+    // console.log(parishes)
   }, [parishes])
 
   return (

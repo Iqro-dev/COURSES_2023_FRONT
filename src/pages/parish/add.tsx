@@ -1,5 +1,5 @@
 import { Box, Grid, Stack, TextField, Typography } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LoadingButton } from '@mui/lab'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
@@ -12,6 +12,7 @@ import {
 import * as Yup from 'yup'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useValidationResolver } from '../../hooks/forms/use-validate'
+import { useDioceses } from '../../hooks/diocese/use-dioceses'
 
 export default function AddParish() {
   const validationSchema = Yup.object().shape({
@@ -20,6 +21,8 @@ export default function AddParish() {
   })
 
   const resolver = useValidationResolver(validationSchema)
+
+  const { dioceses } = useDioceses()
 
   const {
     handleSubmit,
@@ -80,6 +83,10 @@ export default function AddParish() {
   const { enqueueSnackbar } = useSnackbar()
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // console.log(dioceses)
+  }, [dioceses])
 
   return (
     <>

@@ -17,7 +17,6 @@ export function DiocesesAutocomplete(
     diocesesOptions = dioceses.map((diocese) => ({ value: diocese.id, label: diocese.name }))
   }, [dioceses])
 
-
   const { error, ...rest } = props
 
   return (
@@ -27,7 +26,7 @@ export function DiocesesAutocomplete(
         renderInput={(params) => <TextField error={error} {...params} label='Diecezja' variant='outlined' />}
         options={diocesesOptions}
       />
-      <FormHelperText>{error && 'Proszę wybrać parafię'}</FormHelperText>
+      <FormHelperText>{error && 'Proszę wybrać diecezję'}</FormHelperText>
     </FormControl>
   )
 }
