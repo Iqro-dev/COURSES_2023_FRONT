@@ -1,8 +1,9 @@
-import { DataGrid, GridColDef, plPL } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { plPL } from '../utils/datagrid-lang'
 
 interface CustomDataGridProps {
-  rows: any[];
-  columns: GridColDef[];
+  rows: any[]
+  columns: GridColDef[]
 }
 
 export function CustomDataGrid({ rows, columns }: CustomDataGridProps) {
