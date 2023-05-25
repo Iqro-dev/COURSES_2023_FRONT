@@ -125,7 +125,7 @@ export default function AdminsList() {
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <CustomDataGrid
             rows={
               admins?.map((u, idx) => ({

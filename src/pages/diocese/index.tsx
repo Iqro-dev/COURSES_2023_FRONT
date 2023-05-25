@@ -1,4 +1,13 @@
-import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
+import {
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+} from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { Add, Delete, Edit } from '@mui/icons-material'
@@ -79,7 +88,15 @@ export default function DiocesesList() {
   return (
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
-        <DialogTitle>Czy na pewno chcesz usunąć tą diecezję?</DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }}>
+          Czy na pewno chcesz usunąć diecezję?
+        </DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {dioceses.find((diocese) => diocese.id === deleteDialogId)?.name}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
@@ -115,7 +132,7 @@ export default function DiocesesList() {
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <CustomDataGrid
             rows={
               dioceses?.map((u, idx) => ({

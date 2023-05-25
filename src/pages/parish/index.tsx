@@ -1,4 +1,13 @@
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
+import {
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+} from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,6 +17,7 @@ import { useSnackbar } from 'notistack'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { CustomDataGrid } from '../../components/data-grid'
+import { useDioceses } from '../../hooks/diocese/use-dioceses'
 
 export default function ParishesList() {
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -15,6 +25,8 @@ export default function ParishesList() {
   const [deleteDialogId, setDeleteDialogId] = useState(0)
 
   const { enqueueSnackbar } = useSnackbar()
+
+  const { dioceses } = useDioceses()
 
   const { getApiResponse } = useApi()
 
@@ -58,6 +70,16 @@ export default function ParishesList() {
       flex: 1,
     },
     {
+      field: 'dioceseId',
+      headerName: 'Diecezja',
+      flex: 1,
+      renderCell: (params) => {
+        const diocese = dioceses.find((diocese) => diocese.id === params.value)
+
+        return <Typography>{diocese?.name}</Typography>
+      },
+    },
+    {
       field: 'Akcje',
       type: 'actions',
       getActions: (params: { id: any }) => [
@@ -83,7 +105,15 @@ export default function ParishesList() {
   return (
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
-        <DialogTitle>Czy na pewno chcesz usunąć tą parafię?</DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }}>
+          Czy na pewno chcesz usunąć parafię?
+        </DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {parishes.find((parish) => parish.id === deleteDialogId)?.name}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
@@ -119,7 +149,7 @@ export default function ParishesList() {
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <CustomDataGrid
             rows={
               parishes?.map((u, idx) => ({
