@@ -25,7 +25,7 @@ export function CustomDataGrid({ rows, columns }: CustomDataGridProps) {
     <Box
       sx={{
         height: '100%',
-        width: '100%',
+        minWidth: '100%',
         '& .super-app-theme--header': {
           backgroundColor: 'rgba(224, 222, 221, 0.55)',
         },

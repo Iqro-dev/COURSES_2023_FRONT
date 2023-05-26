@@ -54,12 +54,13 @@ export default function DiocesesList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 75,
+      minWidth: 50,
     },
     {
       field: 'name',
       headerName: 'Nazwa diecezji',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'Akcje',
@@ -82,6 +83,7 @@ export default function DiocesesList() {
       ],
       flex: 1,
       align: 'right',
+      minWidth: 100,
     },
   ]
 
@@ -123,10 +125,23 @@ export default function DiocesesList() {
       </Dialog>
 
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant='h4'>Diecezje</Typography>
 
-          <Button variant='outlined' color='primary' component={Link} to='./add'>
+          <Button
+            sx={{ display: 'flex', gap: 1 }}
+            variant='outlined'
+            color='primary'
+            component={Link}
+            to='./add'
+          >
             <Add />
             Dodaj diecezje
           </Button>

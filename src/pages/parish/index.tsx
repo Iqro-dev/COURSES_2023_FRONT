@@ -57,17 +57,19 @@ export default function ParishesList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 75,
+      minWidth: 50,
     },
     {
       field: 'name',
       headerName: 'Nazwa parafii',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'address',
       headerName: 'Adres parafii',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'dioceseId',
@@ -78,6 +80,7 @@ export default function ParishesList() {
 
         return <Typography>{diocese?.name}</Typography>
       },
+      minWidth: 250,
     },
     {
       field: 'Akcje',
@@ -99,6 +102,7 @@ export default function ParishesList() {
       ],
       flex: 1,
       align: 'right',
+      minWidth: 100,
     },
   ]
 
@@ -140,10 +144,23 @@ export default function ParishesList() {
       </Dialog>
 
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant='h4'>Parafie</Typography>
 
-          <Button variant='outlined' color='primary' component={Link} to='./add'>
+          <Button
+            sx={{ display: 'flex', gap: 1 }}
+            variant='outlined'
+            color='primary'
+            component={Link}
+            to='./add'
+          >
             <Add />
             Dodaj parafię
           </Button>

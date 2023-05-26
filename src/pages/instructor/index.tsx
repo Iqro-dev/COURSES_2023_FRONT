@@ -44,24 +44,27 @@ export default function InstructorsList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 75,
+      minWidth: 50,
     },
     {
       field: 'email',
       headerName: 'Login (e-mail)',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'instructorFirstName',
       headerName: 'Imię',
       valueGetter: (params: any) => params.row?.instructor?.firstName,
       flex: 1,
+      minWidth: 150,
     },
     {
       field: 'instructorLastName',
       headerName: 'Nazwisko',
       valueGetter: (params: any) => params.row?.instructor?.lastName,
       flex: 1,
+      minWidth: 200,
     },
     {
       field: 'Akcje',
@@ -83,6 +86,7 @@ export default function InstructorsList() {
       ],
       flex: 1,
       align: 'right',
+      minWidth: 100,
     },
   ]
 
@@ -116,10 +120,24 @@ export default function InstructorsList() {
       </Dialog>
 
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 2,
+          }}
+        >
           <Typography variant='h4'>Prowadzący</Typography>
 
-          <Button variant='outlined' color='primary' component={Link} to='./add'>
+          <Button
+            sx={{ display: 'flex', gap: 1 }}
+            variant='outlined'
+            color='primary'
+            component={Link}
+            to='./add'
+          >
             <Add />
             Dodaj prowadzącego
           </Button>
