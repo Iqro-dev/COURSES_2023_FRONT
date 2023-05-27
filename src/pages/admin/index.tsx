@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle, DialogContent } from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useAdmins } from '../../hooks/admin/use-admins'
 import { CustomDataGrid } from '../../components/data-grid'
@@ -94,6 +94,14 @@ export default function AdminsList() {
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
         <DialogTitle>Czy na pewno chcesz usunąć administratora?</DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {admins?.find((admin) => admin.id === deleteDialogId)?.admin?.firstName}
+            {' '}
+            {admins?.find((admin) => admin.id === deleteDialogId)?.admin?.lastName}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}

@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
+import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle, DialogContent } from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useInstructors } from '../../hooks/instructor/use-instructors'
 import { Add, Delete, Edit } from '@mui/icons-material'
@@ -105,6 +105,14 @@ export default function InstructorsList() {
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
         <DialogTitle>Czy na pewno chcesz usunąć prowadzącego?</DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {instructors.find((instructor) => instructor.id === deleteDialogId)?.instructor?.firstName}
+            {' '}
+            {instructors.find((instructor) => instructor.id === deleteDialogId)?.instructor?.lastName}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
