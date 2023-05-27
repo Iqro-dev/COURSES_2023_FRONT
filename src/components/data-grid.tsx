@@ -1,13 +1,15 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import { plPL } from '../utils/datagrid-lang'
 import { Box, Typography } from '@mui/material'
+import { GridInitialStateCommunity } from '@mui/x-data-grid/models/gridStateCommunity'
 
 interface CustomDataGridProps {
   rows: any[]
   columns: GridColDef[]
+  initialState?: GridInitialStateCommunity
 }
 
-export function CustomDataGrid({ rows, columns }: CustomDataGridProps) {
+export function CustomDataGrid({ rows, columns, initialState }: CustomDataGridProps) {
   const columnsEdit = columns.map((column) => {
     column.headerClassName = 'super-app-theme--header'
     column.renderHeader = () => {
@@ -32,6 +34,9 @@ export function CustomDataGrid({ rows, columns }: CustomDataGridProps) {
       }}
     >
       <DataGrid
+        initialState={{
+          ...initialState,
+        }}
         autoHeight
         localeText={plPL.components.MuiDataGrid.defaultProps.localeText}
         rows={rows}

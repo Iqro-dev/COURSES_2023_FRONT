@@ -281,7 +281,7 @@ export default function InstructorDetails() {
           <InputText
             label='Opis'
             multiline
-            rows={4}
+            rows={6}
             value={instructorDetails?.instructor?.description ?? ''}
             onChange={(e) =>
               setInstructorDetails({
@@ -296,6 +296,8 @@ export default function InstructorDetails() {
 
           <InputText
             label='Kwalifikacje'
+            multiline
+            rows={6}
             value={instructorDetails?.instructor?.qualifications ?? ''}
             onChange={(e) =>
               setInstructorDetails({

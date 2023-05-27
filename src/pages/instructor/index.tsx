@@ -67,6 +67,17 @@ export default function InstructorsList() {
       minWidth: 200,
     },
     {
+      field: 'instructorParishes',
+      headerName: 'Parafie',
+      valueGetter: (params: any) => {
+        const parishes = params.row?.instructor?.parishes?.map((p: any) => p.name).join(', ')
+
+        if (!parishes) return 'Brak przypisanej parafii'
+        return parishes
+      },
+      flex: 1,
+    },
+    {
       field: 'Akcje',
       type: 'actions',
       getActions: (params: { id: any }) => [
@@ -152,6 +163,11 @@ export default function InstructorsList() {
               })) ?? []
             }
             columns={columns}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'instructorLastName', sort: 'asc' }],
+              }
+            }}
           />
         </Box>
       </Grid>
