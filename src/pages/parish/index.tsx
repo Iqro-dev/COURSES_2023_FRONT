@@ -78,7 +78,7 @@ export default function ParishesList() {
       renderCell: (params) => {
         const diocese = dioceses.find((diocese) => diocese.id === params.value)
 
-        return <Typography>{diocese?.name}</Typography>
+        return <Typography>{diocese?.name ?? 'Brak przypisanej diecezji'}</Typography>
       },
       minWidth: 250,
     },
