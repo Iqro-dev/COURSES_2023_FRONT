@@ -1,4 +1,13 @@
-import { Grid, Typography, Box, Button, Dialog, DialogTitle, DialogActions } from '@mui/material'
+import {
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+} from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { useDioceses } from '../../hooks/diocese/use-dioceses'
 import { Add, Delete, Edit } from '@mui/icons-material'
@@ -45,12 +54,13 @@ export default function DiocesesList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 75,
+      minWidth: 50,
     },
     {
       field: 'name',
       headerName: 'Nazwa diecezji',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'Akcje',
@@ -73,13 +83,22 @@ export default function DiocesesList() {
       ],
       flex: 1,
       align: 'right',
+      minWidth: 100,
     },
   ]
 
   return (
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
-        <DialogTitle>Czy na pewno chcesz usunąć tą diecezję?</DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }}>
+          Czy na pewno chcesz usunąć diecezję?
+        </DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {dioceses.find((diocese) => diocese.id === deleteDialogId)?.name}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
@@ -106,16 +125,29 @@ export default function DiocesesList() {
       </Dialog>
 
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant='h4'>Diecezje</Typography>
 
-          <Button variant='outlined' color='primary' component={Link} to='./add'>
+          <Button
+            sx={{ display: 'flex', gap: 1 }}
+            variant='outlined'
+            color='primary'
+            component={Link}
+            to='./add'
+          >
             <Add />
             Dodaj diecezje
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <CustomDataGrid
             rows={
               dioceses?.map((u, idx) => ({

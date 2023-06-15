@@ -1,4 +1,13 @@
-import { Grid, Typography, Box, Button, Dialog, DialogActions, DialogTitle } from '@mui/material'
+import {
+  Grid,
+  Typography,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+} from '@mui/material'
 import { GridActionsCellItem, GridColDef } from '@mui/x-data-grid'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import { Link, useNavigate } from 'react-router-dom'
@@ -8,6 +17,7 @@ import { useSnackbar } from 'notistack'
 import { useApi } from '../../hooks/use-api'
 import { Methods } from '../../types/fetch-methods'
 import { CustomDataGrid } from '../../components/data-grid'
+import { useDioceses } from '../../hooks/diocese/use-dioceses'
 
 export default function ParishesList() {
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -15,6 +25,8 @@ export default function ParishesList() {
   const [deleteDialogId, setDeleteDialogId] = useState(0)
 
   const { enqueueSnackbar } = useSnackbar()
+
+  const { dioceses } = useDioceses()
 
   const { getApiResponse } = useApi()
 
@@ -45,17 +57,30 @@ export default function ParishesList() {
     {
       field: 'ordinalNumber',
       headerName: 'Lp.',
-      width: 75,
+      minWidth: 50,
     },
     {
       field: 'name',
       headerName: 'Nazwa parafii',
       flex: 1,
+      minWidth: 250,
     },
     {
       field: 'address',
       headerName: 'Adres parafii',
       flex: 1,
+      minWidth: 250,
+    },
+    {
+      field: 'dioceseId',
+      headerName: 'Diecezja',
+      flex: 1,
+      renderCell: (params) => {
+        const diocese = dioceses.find((diocese) => diocese.id === params.value)
+
+        return <Typography>{diocese?.name ?? 'Brak przypisanej diecezji'}</Typography>
+      },
+      minWidth: 250,
     },
     {
       field: 'Akcje',
@@ -77,13 +102,22 @@ export default function ParishesList() {
       ],
       flex: 1,
       align: 'right',
+      minWidth: 100,
     },
   ]
 
   return (
     <>
       <Dialog open={deleteDialog} sx={{ padding: 4 }}>
-        <DialogTitle>Czy na pewno chcesz usunąć tą parafię?</DialogTitle>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'center' }}>
+          Czy na pewno chcesz usunąć parafię?
+        </DialogTitle>
+
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant='h5' align='center'>
+            {parishes.find((parish) => parish.id === deleteDialogId)?.name}
+          </Typography>
+        </DialogContent>
 
         <DialogActions
           sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
@@ -110,16 +144,29 @@ export default function ParishesList() {
       </Dialog>
 
       <Grid container direction='column' gap={2} sx={{ padding: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
+        >
           <Typography variant='h4'>Parafie</Typography>
 
-          <Button variant='outlined' color='primary' component={Link} to='./add'>
+          <Button
+            sx={{ display: 'flex', gap: 1 }}
+            variant='outlined'
+            color='primary'
+            component={Link}
+            to='./add'
+          >
             <Add />
             Dodaj parafię
           </Button>
         </Box>
 
-        <Box sx={{ height: 500, width: '100%' }}>
+        <Box sx={{ width: '100%' }}>
           <CustomDataGrid
             rows={
               parishes?.map((u, idx) => ({

@@ -156,10 +156,7 @@ export default function InstructorDetails() {
             getApiResponse(
               '/images/instructors',
               Methods.POST,
-              createFormData(
-                image.file!,
-                'qualification_image',
-              ),
+              createFormData(image.file!, 'qualification_image'),
               true,
             ),
           )
@@ -171,10 +168,7 @@ export default function InstructorDetails() {
             getApiResponse(
               '/images/instructors',
               Methods.POST,
-              createFormData(
-                image.file!,
-                'other_image',
-              ),
+              createFormData(image.file!, 'other_image'),
               true,
             ),
           )
@@ -281,7 +275,7 @@ export default function InstructorDetails() {
           <InputText
             label='Opis'
             multiline
-            rows={4}
+            rows={6}
             value={instructorDetails?.instructor?.description ?? ''}
             onChange={(e) =>
               setInstructorDetails({
@@ -296,6 +290,8 @@ export default function InstructorDetails() {
 
           <InputText
             label='Kwalifikacje'
+            multiline
+            rows={6}
             value={instructorDetails?.instructor?.qualifications ?? ''}
             onChange={(e) =>
               setInstructorDetails({
@@ -325,7 +321,6 @@ export default function InstructorDetails() {
                 },
               })
             }}
-            error={instructorDetails.instructor?.parishesIds?.length === 0}
           />
         </Stack>
 
@@ -522,7 +517,6 @@ export default function InstructorDetails() {
           <Button
             onClick={handleEdit}
             disabled={
-              instructorDetails.instructor?.parishesIds?.length === 0 ||
               !instructorDetails?.instructor?.qualifications ||
               !instructorDetails?.instructor?.description ||
               !instructorDetails?.instructor?.lastName ||

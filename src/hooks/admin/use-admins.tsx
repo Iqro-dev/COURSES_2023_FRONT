@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useApi } from '../use-api'
 import { Methods } from '../../types/fetch-methods'
-import { Admin } from '../../types/admin/admin'
+import { User } from '../../types/user'
 
 export function useAdmins() {
   const { getApiResponse } = useApi()
 
-  const [admins, setAdmins] = useState<Admin[]>()
+  const [admins, setAdmins] = useState<User[]>()
   const [loaded, setLoaded] = useState(false)
 
   const load = () => {
-    getApiResponse<Admin[]>('/users/list?role=admin', Methods.GET).then((res) => {
+    getApiResponse<User[]>('/users/list?role=admin', Methods.GET).then((res) => {
       if (!res.isSuccess) return console.error(res)
 
       const admins = res.data

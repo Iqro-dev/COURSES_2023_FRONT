@@ -33,8 +33,6 @@ export default function AddInstructor() {
 
   const resolver = useValidationResolver(validationSchema)
 
-  const [checked, setChecked] = useState(false)
-
   const [selectedParishes, setSelectedParishes] = useState<number[]>([])
 
   const { parishes } = useParishes()
@@ -68,7 +66,6 @@ export default function AddInstructor() {
   }
 
   const onValid: SubmitHandler<any> = (formData) => {
-    if (selectedParishes.length === 0) return
     console.log('valid', formData)
 
     const data: InstructorPost = {
@@ -137,9 +134,18 @@ export default function AddInstructor() {
 
               <TextField label={'Nazwisko'} id='lastName' {...inputProps('lastName')} />
 
-              <TextField multiline rows={4} label={'Opis'} id='description' {...inputProps('description')} />
+              <TextField
+                multiline
+                rows={6}
+                label={'Opis'}
+                id='description'
+                {...inputProps('description')}
+              />
 
               <TextField
+                rows={6}
+                maxRows={20}
+                multiline
                 label={'Kwalifikacje'}
                 id='qualifications'
                 {...inputProps('qualifications')}
@@ -154,7 +160,6 @@ export default function AddInstructor() {
                   const ids = e?.map((c) => c.value ?? -1) ?? []
                   setSelectedParishes([...ids])
                 }}
-                error={selectedParishes.length === 0 && checked}
               />
             </Box>
           </Grid>
@@ -169,7 +174,6 @@ export default function AddInstructor() {
             color='success'
             variant='contained'
             type='submit'
-            onClick={() => setChecked(true)}
             sx={{ width: 150, alignSelf: 'end' }}
           >
             Zapisz
