@@ -23,6 +23,7 @@ export default function AdminDetails() {
     admin: {
       firstName: '',
       lastName: '',
+      phoneNumber: '',
     }
   })
 
@@ -104,6 +105,20 @@ export default function AdminDetails() {
                 admin: {
                   ...adminDetails.admin!,
                   lastName: e,
+                },
+              })
+            }
+          />
+
+          <InputText
+            label='Numer telefonu'
+            value={adminDetails?.admin?.phoneNumber ?? ''}
+            onChange={(e) =>
+              setAdminDetails({
+                ...adminDetails,
+                admin: {
+                  ...adminDetails.admin!,
+                  phoneNumber: e,
                 },
               })
             }

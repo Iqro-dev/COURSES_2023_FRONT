@@ -64,6 +64,7 @@ export default function AddAdmin() {
       admin: {
         firstName: formData.firstName,
         lastName: formData.lastName,
+        phoneNumber: formData.phoneNumber,
       },
     }
 
@@ -111,6 +112,8 @@ export default function AddAdmin() {
           <TextField label={'Imię'} id='firstName' {...inputProps('firstName')} />
 
           <TextField label={'Nazwisko'} id='lastName' {...inputProps('lastName')} />
+
+          <TextField label={'Numer telefonu'} id='lastName' {...inputProps('phoneNumber')} />
 
           <Stack direction='row' justifyContent='space-between'>
             <LoadingButton color='primary' variant='contained' onClick={() => navigate(-1)}>
