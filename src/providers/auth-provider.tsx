@@ -70,7 +70,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const res = await getUserData(id)
 
     if (res.isSuccess && typeof res.data !== 'string') {
-      const auth = { ...context.auth, time, loginStatus: true }
+      const auth = { ...context.auth, time, loginStatus: true, id: id }
       const _context = { ...context, user: res.data, auth }
       setContext(_context)
 
