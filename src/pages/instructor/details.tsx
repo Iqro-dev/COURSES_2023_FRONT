@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  FormControlLabel,
   Grid,
   IconButton,
   ImageList,
@@ -45,6 +47,18 @@ export default function InstructorDetails() {
   const id = params.get('id')
 
   const { user } = useContext(AuthContext)
+
+  const {
+    auth: { id: authId }
+  } = useContext(AuthContext)
+
+  const [changePassword, setChangePassword] = useState(false)
+
+  const [passwords, setPasswords] = useState({
+    oldPassword: '',
+    newPassword: '',
+    repeatNewPassword: '',
+  })
 
   const {
     otherImages: otherImagesFiles,
@@ -132,7 +146,7 @@ export default function InstructorDetails() {
 
     const imagePromises = []
 
-    const dataPromise = getApiResponse('/users', Methods.PUT, instructorDetails)
+    const otherPromises = [getApiResponse('/users', Methods.PUT, instructorDetails)]
 
     if (user.role === 'instructor') {
       if (deletedImages.length > 0)
@@ -175,8 +189,12 @@ export default function InstructorDetails() {
         })
     }
 
+    if (changePassword) {
+      otherPromises.push(getApiResponse('/users/password', Methods.PUT, { UserId: instructorDetails.id, OldPassword: passwords.oldPassword, NewPassword: passwords.newPassword }))
+    }
+
     Promise.all(
-      [dataPromise, ...imagePromises].map(
+      [...otherPromises, ...imagePromises].map(
         (promise) =>
           new Promise(async (resolve, reject) => {
             const response = await promise
@@ -509,6 +527,45 @@ export default function InstructorDetails() {
           </Grid>
         )}
 
+        <Stack direction='column' gap={2} sx={{ padding: 2 }}>
+          <FormControlLabel control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setChangePassword(e.target.checked)} />} label="Zmiana hasła" />
+
+          <Stack direction='column' gap={2} sx={{ padding: 1 }}>
+            {instructorDetails.id === authId && < InputText
+              label='Stare hasło'
+              value={passwords.oldPassword}
+              disabled={!changePassword}
+              type='password'
+              onChange={(e) =>
+                setPasswords({ ...passwords, oldPassword: e })
+              }
+            />}
+
+            <InputText
+              label='Nowe hasło'
+              value={passwords.newPassword}
+              disabled={!changePassword}
+              error={passwords.newPassword !== passwords.repeatNewPassword}
+              helperText={passwords.newPassword !== passwords.repeatNewPassword ? 'Hasła nie są takie same' : ''}
+              type='password'
+              onChange={(e) =>
+                setPasswords({ ...passwords, newPassword: e })
+              }
+            />
+
+            <InputText
+              label='Powtórz nowe hasło'
+              value={passwords.repeatNewPassword}
+              disabled={!changePassword}
+              error={passwords.newPassword !== passwords.repeatNewPassword}
+              type='password'
+              onChange={(e) =>
+                setPasswords({ ...passwords, repeatNewPassword: e })
+              }
+            />
+          </Stack>
+        </Stack>
+
         <Stack direction='row' justifyContent='space-between'>
           <Button onClick={() => navigate(-1)} variant='contained' color='primary'>
             Powrót
@@ -521,7 +578,8 @@ export default function InstructorDetails() {
               !instructorDetails?.instructor?.description ||
               !instructorDetails?.instructor?.lastName ||
               !instructorDetails?.instructor?.firstName ||
-              !instructorDetails?.email
+              !instructorDetails?.email ||
+              (changePassword && (passwords.newPassword !== passwords.repeatNewPassword))
             }
             variant='contained'
             color='success'
